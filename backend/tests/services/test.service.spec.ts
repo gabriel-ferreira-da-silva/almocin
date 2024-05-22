@@ -10,12 +10,12 @@ describe('TestService', () => {
   let mockOtherRepository: OtherRepository;
   let service: TestService;
 
-  let mockTestEntity: TestEntity = new TestEntity({
+  const mockTestEntity: TestEntity = new TestEntity({
     id: '123',
     name: 'test',
   });
 
-  let mockTestModel: TestModel = new TestModel(mockTestEntity);
+  const mockTestModel: TestModel = new TestModel(mockTestEntity);
 
   beforeEach(() => {
     mockTestRepository = {

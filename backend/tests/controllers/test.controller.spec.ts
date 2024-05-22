@@ -5,10 +5,10 @@ import { di } from '../../src/di';
 import TestRepository from '../../src/repositories/test.repository';
 
 describe('TestController', () => {
-  let request = supertest(app);
+  const request = supertest(app);
   let mockTestRepository: TestRepository;
 
-  let mockTestEntity: TestEntity = new TestEntity({
+  const mockTestEntity: TestEntity = new TestEntity({
     id: '123',
     name: 'test',
   });
