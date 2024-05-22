@@ -1,0 +1,19 @@
+set -euo pipefail
+
+cd backend
+npm run lint
+
+cd ../frontend
+npm run lint
+
+cd ..
+
+files_changed=$(git diff HEAD)
+
+if [[ $files_changed == *"package.json"* ]]; then
+  echo "package.json has changed. Please run 'npm install' and commit the changes."
+  exit 1
+fi
+
+echo "Linting passed."
+exit 0
