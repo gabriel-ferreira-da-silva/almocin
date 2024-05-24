@@ -3,7 +3,7 @@ import TestRepository from '../repositories/test.repository';
 import TestService from '../services/test.service';
 import Injector from './injector';
 
-export const di = new Injector();
+export const di = new Injector<any>();
 
 // Test
 di.registerRepository(TestRepository, new TestRepository());
