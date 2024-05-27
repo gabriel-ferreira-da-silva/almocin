@@ -26,6 +26,14 @@ Scenario: Login mal-sucedido devido a senha incorreta
   Then vejo uma mensagem de erro indicando que a senha está incorreta
   And permaneço na página de login/cadastro
 
+Scenario: Login mal-sucedido devido a nome de usuário incorreto
+  Given estou na página de login e o nome de usuário correto é "talpessoa"
+  When preencho o campo de nome com "usuariodefeito"
+  And preencho o campo de senha com "asenha123"
+  And clico no botão de login
+  Then vejo uma mensagem de erro indicando que o nome de usuário está incorreto
+  And permaneço na página de login
+
 
 
 
