@@ -22,4 +22,5 @@ Scenario: editar a quantidade de itens no carrinho de compras
     When eu seleciono "+" no item "Água"
     Then eu estou na "página do carinho de compras"
     And o campo "preço" tem o valor "R$4,50"
+    And "botão -" fica "selecionavel"
     And o campo "quantidade" tem o valor "2"
