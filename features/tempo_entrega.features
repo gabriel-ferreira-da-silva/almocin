@@ -3,7 +3,7 @@ Feature: Calcular o tempo de entrega
     I want ver qual o tempo estimado de entrega do meu pedido
     So that eu possa saber em quanto tempo o meu pedido será entregue
 
-Scenario: visualizar o temp de entrega
+Scenario: visualizar o tempo de entrega
     Given eu estou na "página do carrinho de compras"
     And meu "carrinho de compras" tem o item "Água"
     And o campo "preço" do item "Água" tem o valor "R$4,50"
