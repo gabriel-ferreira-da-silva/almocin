@@ -33,7 +33,7 @@ Scenario: Login mal-sucedido devido a formato de email incorreto
   Then vejo uma mensagem de erro indicando que o formato do email está incorreto
   And permaneço na página de login
 
-elemento adicionado em main
+main element
 
 
 
