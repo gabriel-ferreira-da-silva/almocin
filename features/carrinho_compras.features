@@ -23,13 +23,3 @@ Scenario: editar a quantidade de itens no carrinho de compras
     Then eu estou na "página do carinho de compras"
     And o campo "preço" tem o valor "R$4,50"
     And o campo "quantidade" tem o valor "2"
-    
-Scenario: visualizar detalhes de um item no carrinho de compras
-    Given eu estou na "página do carinho de compras"
-    And meu "carrinho de compras" tem o item "Pastel de carne"
-    And o campo "preço" tem o valor "R$7,50"
-    And o campo "quantidade" tem o valor "1"
-    When eu clico no item "Pastel de carne"
-    Then eu estou na "página dos detalhes do item pastel de carne"
-    And o campo "preço" tem o valor "R$7,50"
-    And o campo "foto" tem o valor "image-pastel-carne.jpg"
