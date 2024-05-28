@@ -35,6 +35,15 @@ Scenario: Login mal-sucedido devido a nome de usuário incorreto
   And A mensagem some
   And permaneço na página de login
 
+Scenario: Login mal-sucedido devido a formato de email incorreto
+  Given estou na página de login
+  When preencho o campo de nome com "usuario@incorreto"
+  And preencho o campo de senha com "asenha123"
+  And clico no botão de login
+  Then vejo uma mensagem de erro indicando que o formato do email está incorreto
+  And permaneço na página de login
+
+
 
 
 
