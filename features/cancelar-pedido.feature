@@ -4,7 +4,7 @@ Feature: Cancelar Pedidos
     so that: Comparar minhas notas ao do professor
     
     Scenario: Pedido cancelado por Atraso - (GUI)
-        Given Usuario esta na pagina "Pedidos"
+        Given Usuario esta na pagina de nome  "Pedidos"
         And O pedido "cuscuz com leite" esta cadastrado
         And "Tempo estimado de entrega" de "cuscuz com leite " e "1 hora"
         And "Status" do pedido "cuscuz com leite" e "Em andamento"
