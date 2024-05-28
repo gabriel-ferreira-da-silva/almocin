@@ -32,6 +32,7 @@ Scenario: Login mal-sucedido devido a nome de usuário incorreto
   And preencho o campo de senha com "asenha123"
   And clico no botão de login
   Then vejo uma mensagem de erro indicando que o nome de usuário está incorreto
+  And A mensagem some
   And permaneço na página de login
 
 
