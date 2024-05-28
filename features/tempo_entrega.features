@@ -1,7 +1,7 @@
 Feature: Calcular o tempo de entrega
-    As eu sou um cliente
-    I want ver qual o tempo estimado de entrega do meu pedido
-    So that eu possa saber em quanto tempo o meu pedido será entregue
+    As 
+    I want 
+    So that
 
 Scenario: visualizar o temp de entrega
     Given eu estou na "página do carrinho de compras"
