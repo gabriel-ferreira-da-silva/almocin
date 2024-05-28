@@ -7,7 +7,6 @@ Feature: Tentativa indevida de acesso via URL sem estar logado
     Then Sou redirecionado automaticamente para a página de login
     And Vejo uma mensagem informando que devo fazer login para acessar a página desejada
 
-
 Feature: Logout
 
 Scenario: Logout do Sistema
@@ -34,7 +33,7 @@ Scenario: Login mal-sucedido devido a formato de email incorreto
   Then vejo uma mensagem de erro indicando que o formato do email está incorreto
   And permaneço na página de login
 
-
+elemento adicionado em main
 
 
 
