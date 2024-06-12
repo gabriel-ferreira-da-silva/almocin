@@ -28,7 +28,7 @@ class MenuService {
 
     if (!entity) {
       throw new HttpNotFoundError({
-        msg: 'Test not found',
+        msg: 'Não encontrado',
         msgCode: 'Item não encontrado no cardápio',
       });
     }
@@ -43,8 +43,12 @@ class MenuService {
 
   public async createItem(data: ItemMenuEntity): Promise<MenuModel> {
     const entity = await this.menuRepository.createItem(data);
+    const newId = (await this.menuRepository.getItems()).length + 1;
     const model = new MenuModel({
       ...entity,
+      id: newId.toString(), 
+      createdAt: new Date(),
+      oldPrice: 0,
       hasPromotion: entity.oldPrice > entity.price,
     });
 
@@ -56,7 +60,7 @@ class MenuService {
 
     if (!entity) {
       throw new HttpNotFoundError({
-        msg: 'Test not found',
+        msg: 'Não encontrado',
         msgCode: 'Item não encontrado no cardápio',
       });
     }

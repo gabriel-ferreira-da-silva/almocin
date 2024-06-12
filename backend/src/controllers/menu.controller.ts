@@ -44,32 +44,32 @@ class MenuController {
   }
 
   private async getItem(req: Request, res: Response) {
-    const test = await this.menuService.getItem(req.params.id);
+    const item = await this.menuService.getItem(req.params.id);
 
     return new SuccessResult({
       msg: Result.transformRequestOnMsg(req),
-      data: test,
+      data: item,
     }).handle(res);
   }
 
   private async createItem(req: Request, res: Response) {
-    const test = await this.menuService.createItem(new ItemMenuEntity(req.body));
+    const item = await this.menuService.createItem(new ItemMenuEntity(req.body));
 
     return new SuccessResult({
       msg: Result.transformRequestOnMsg(req),
-      data: test,
+      data: item,
     }).handle(res);
   }
 
   private async updateItem(req: Request, res: Response) {
-    const test = await this.menuService.updateItem(
+    const item = await this.menuService.updateItem(
       req.params.id,
       new ItemMenuEntity(req.body)
     );
 
     return new SuccessResult({
       msg: Result.transformRequestOnMsg(req),
-      data: test,
+      data: item,
     }).handle(res);
   }
 
