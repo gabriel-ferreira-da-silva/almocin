@@ -16,7 +16,7 @@ Feature: Categorias
       | 4  | Aperitivos  |
   
   Scenario: Criar uma nova Categoria
-    When o usuário faz uma requisição "POST" para "/categories" com os seguintes dados:
+    When o usuário faz uma requisição "POST" para "/category" com os seguintes dados:
       """
       {
         "Name": "Sobremesas"
@@ -39,7 +39,7 @@ Feature: Categorias
       | 5  | Sobremesas  |
 
   Scenario: Atualizar uma Categoria existente
-    When o usuário faz uma requisição "PUT" para "/categories/1" com os seguintes dados:
+    When o usuário faz uma requisição "PUT" para "/category/1" com os seguintes dados:
       """
       {
         "Name": "Infantil"
@@ -62,7 +62,7 @@ Feature: Categorias
       | 5  | Sobremesas   |
 
   Scenario: Deletar uma Categoria existente
-    When o usuário faz uma requisição "DELETE" para "/categories/0"
+    When o usuário faz uma requisição "DELETE" para "/category/0"
     Then a resposta deve ser "200"
     And o corpo da resposta deve ser:
       """
@@ -84,7 +84,7 @@ Feature: Categorias
       | 0  | Água        | Bebidas     |
       | 1  | Refrigerante| Bebidas     |
       | 2  | Batata      | Vegetariano |
-    When o usuário faz uma requisição "DELETE" para "/categories/1"
+    When o usuário faz uma requisição "DELETE" para "/category/1"
     Then a resposta deve ser "400"
     And o corpo da resposta deve ser:
       """
@@ -102,7 +102,7 @@ Feature: Categorias
       | 5  | Sobremesas   |
 
   Scenario: Criar uma Categoria com o mesmo nome
-    When o usuário faz uma requisição "POST" para "/categories" com os seguintes dados:
+    When o usuário faz uma requisição "POST" para "/category" com os seguintes dados:
       """
       {
         "Name": "Vegetariano"
@@ -125,7 +125,7 @@ Feature: Categorias
       | 5  | Sobremesas   |
 
   Scenario: Atualizar uma Categoria com o mesmo nome
-    When o usuário faz uma requisição "PUT" para "/categories/2" com os seguintes dados:
+    When o usuário faz uma requisição "PUT" para "/category/2" com os seguintes dados:
       """
       {
         "Name": "Jantar"
@@ -148,7 +148,7 @@ Feature: Categorias
       | 5  | Sobremesas   |
 
   Scenario: Deletar uma Categoria inexistente
-    When o usuário faz uma requisição "DELETE" para "/categories/7"
+    When o usuário faz uma requisição "DELETE" para "/category/7"
     Then a resposta deve ser "400"
     And o corpo da resposta deve ser:
       """
@@ -166,7 +166,7 @@ Feature: Categorias
       | 5  | Sobremesas   |
 
   Scenario: Listar Categorias
-    When o usuário faz uma requisição "GET" para "/categories"
+    When o usuário faz uma requisição "GET" para "/category"
     Then a resposta deve ser "200"
     And o corpo da resposta deve ser:
       """
@@ -207,7 +207,7 @@ Feature: Categorias
       | Água        | Bebidas     |
       | Refrigerante| Bebidas     |
       | Batata      | Vegetariano |
-    When o usuário faz uma requisição "GET" para "/categories/1"
+    When o usuário faz uma requisição "GET" para "/category/1"
     Then a resposta deve ser "200"
     And o corpo da resposta deve ser:
       """
@@ -227,7 +227,7 @@ Feature: Categorias
       """
 
   Scenario: Listar itens de uma Categoria inexistente
-    When o usuário faz uma requisição "GET" para "/categories/7"
+    When o usuário faz uma requisição "GET" para "/category/7"
     Then a resposta deve ser "400"
     And o corpo da resposta deve ser:
       """
@@ -237,7 +237,7 @@ Feature: Categorias
       """
 
   Scenario: Listar itens de uma Categoria sem itens
-    When o usuário faz uma requisição "GET" para "/categories/5"
+    When o usuário faz uma requisição "GET" para "/category/5"
     Then a resposta deve ser "200"
     And o corpo da resposta deve ser:
       """
