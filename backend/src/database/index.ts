@@ -1,4 +1,4 @@
-import TestEntity from '../entities/test.entity';
+import ItemMenuEntity from '../entities/item-menu.entity';
 
 export default class Database {
   data: { [key: string]: any[] };
@@ -20,13 +20,52 @@ export default class Database {
   }
 
   static seed() {
+    const items = [
+      'Batata',
+      'Arroz',
+      'Feijão',
+      'Bife',
+      'Frango',
+      'Peixe',
+      'Salada',
+      'Macarrão',
+      'Pizza',
+      'Hambúrguer'
+    ];
+
+    const categories = [
+      { id: 'category-id-0', name: 'Bebida' },
+      { id: 'category-id-1', name: 'Sobremesa' },
+      { id: 'category-id-2', name: 'Vegetariano' },
+      { id: 'category-id-3', name: 'Vegano' },
+      { id: 'category-id-4', name: 'Sem Glúten' },
+      { id: 'category-id-5', name: 'Sem Lactose' },
+      { id: 'category-id-6', name: 'Fitness' },
+      { id: 'category-id-7', name: 'Gourmet' }
+    ]
+
+    const linkItemsCategories = items.map(() => (
+      categories[Math.floor(Math.random() * categories.length)].id
+    ))
+
     Database.getInstance().data = {
-      tests: [
-        new TestEntity({
-          id: '89ecc32a-aec7-4b71-adfd-03287e4ca74f',
-          name: 'Test Seed',
-        }),
-      ],
+      menu: items.map((item, index) => new ItemMenuEntity({
+        id: `item-id-${index}`,
+        name: item,
+        createdAt: new Date(),
+        active: Math.random() > 0.5, // 50%
+        description: `Descrição do ${item}`,
+        image: `${item.toLowerCase()}.png`,
+        categoryID: linkItemsCategories[index],
+        oldPrice: Math.floor(Math.random() * 10), // 0 - 9
+        price: Math.floor(Math.random() * 10) + 1, // 1 - 10
+        timeToPrepare: Math.floor(Math.random() * 60) + 15, // 15 - 75 minutes
+      })),
+      category: categories.map((category) => ({
+        ...category,
+        createdAt: new Date(),
+        active: linkItemsCategories.includes(category.id) ?? Math.random() > 0.5
+      })),
     };
   }
 }

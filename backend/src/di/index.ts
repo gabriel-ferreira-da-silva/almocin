@@ -1,17 +1,26 @@
-import OtherRepository from '../repositories/other.repository';
-import TestRepository from '../repositories/test.repository';
-import TestService from '../services/test.service';
+import CategoryRepository from '../repositories/category.repository';
+import MenuRepository from '../repositories/menu.repository';
+import CategoryService from '../services/category.service';
+import MenuService from '../services/menu.service';
 import Injector from './injector';
 
-export const di = new Injector<any>();
+export const di = new Injector();
 
-// Test
-di.registerRepository(TestRepository, new TestRepository());
-di.registerRepository(OtherRepository, new OtherRepository());
-di.registerService(
-  TestService,
-  new TestService(
-    di.getRepository(TestRepository),
-    di.getRepository(OtherRepository)
+di.registerRepository<MenuRepository>(MenuRepository, new MenuRepository());
+di.registerRepository<CategoryRepository>(
+  CategoryRepository, new CategoryRepository()
+);
+di.registerService<MenuService>(
+  MenuService,
+  new MenuService(
+    di.getRepository(MenuRepository),
+    di.getRepository(CategoryRepository)
   )
 );
+di.registerService(
+  CategoryService,
+  new CategoryService(
+    di.getRepository(CategoryRepository),
+    di.getRepository(MenuRepository)
+  )
+)
