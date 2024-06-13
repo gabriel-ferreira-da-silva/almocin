@@ -33,18 +33,39 @@ export default class Database {
       'Hambúrguer'
     ];
 
+    const categories = [
+      { id: 'category-id-0', name: 'Bebida' },
+      { id: 'category-id-1', name: 'Sobremesa' },
+      { id: 'category-id-2', name: 'Vegetariano' },
+      { id: 'category-id-3', name: 'Vegano' },
+      { id: 'category-id-4', name: 'Sem Glúten' },
+      { id: 'category-id-5', name: 'Sem Lactose' },
+      { id: 'category-id-6', name: 'Fitness' },
+      { id: 'category-id-7', name: 'Gourmet' }
+    ]
+
+    const linkItemsCategories = items.map(() => (
+      categories[Math.floor(Math.random() * categories.length)].id
+    ))
+
     Database.getInstance().data = {
       menu: items.map((item, index) => new ItemMenuEntity({
         id: `item-id-${index}`,
         name: item,
-        price: Math.floor(Math.random() * 10) + 1, // 1 - 10
-        image: `${item.toLowerCase()}.png`,
-        available: Math.random() > 0.5, // 50%
         createdAt: new Date(),
-        oldPrice: Math.floor(Math.random() * 10), // 0 - 9
+        active: Math.random() > 0.5, // 50%
         description: `Descrição do ${item}`,
+        image: `${item.toLowerCase()}.png`,
+        categoryID: linkItemsCategories[index],
+        oldPrice: Math.floor(Math.random() * 10), // 0 - 9
+        price: Math.floor(Math.random() * 10) + 1, // 1 - 10
         timeToPrepare: Math.floor(Math.random() * 60) + 15, // 15 - 75 minutes
-      }))
+      })),
+      category: categories.map((category) => ({
+        ...category,
+        createdAt: new Date(),
+        active: linkItemsCategories.includes(category.id) ?? Math.random() > 0.5
+      })),
     };
   }
 }

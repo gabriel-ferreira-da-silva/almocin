@@ -4,9 +4,8 @@ export default class ItemMenuEntity extends BaseEntity {
   name: string;
   price: number;
   image: string;
-  createdAt: Date;
+  categoryID: string;
   oldPrice: number;
-  available: boolean;
   description: string;
   timeToPrepare: number;
 
@@ -15,9 +14,8 @@ export default class ItemMenuEntity extends BaseEntity {
     this.name = data.name;
     this.image = data.image;
     this.price = data.price;
+    this.categoryID = data.categoryID;
     this.oldPrice = data.oldPrice;
-    this.createdAt = data.createdAt
-    this.available = data.available;
     this.description = data.description;
     this.timeToPrepare = data.timeToPrepare;
   }

@@ -26,7 +26,7 @@ class MenuRepository extends BaseRepository<ItemMenuEntity> {
   }
 
   public async deleteItem(id: string): Promise<void> {
-    await this.delete((item) => item.id !== id);
+    await this.delete((item) => item.id === id);
   }
 }
 
