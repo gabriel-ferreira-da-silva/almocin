@@ -1,4 +1,4 @@
-set -eu
+set -euo pipefail
 
 cd backend
 npm run lint
