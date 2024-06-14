@@ -1,4 +1,4 @@
-set -euo pipefail
+set -eu
 
 git diff HEAD --quiet -- almocin
 
