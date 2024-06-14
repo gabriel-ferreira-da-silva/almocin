@@ -1,26 +1,26 @@
-export default class Injector<T> {
-  private services: Map<new () => T, any> = new Map();
-  private repositories: Map<new () => T, any> = new Map();
+export default class Injector {
+  private services: Map<new () => unknown, unknown> = new Map<never, never>();
+  private repositories: Map<new () => unknown, unknown> = new Map<never, never>();
 
-  public registerService(
-    serviceType: new (...args: any[]) => T,
-    service: T
+  public registerService<S>(
+    serviceType: new (...args: never[]) => S,
+    service: S
   ): void {
     this.services.set(serviceType, service);
   }
 
-  public getService(serviceType: new (...args: any[]) => T): T {
-    return this.services.get(serviceType) as T;
+  public getService<S>(serviceType: new (...args: never[]) => S): S {
+    return this.services.get(serviceType) as S;
   }
 
-  public registerRepository(
-    repositoryType: new (...args: any[]) => T,
-    repository: T
+  public registerRepository<R>(
+    repositoryType: new (...args: never[]) => R,
+    repository: R
   ): void {
     this.repositories.set(repositoryType, repository);
   }
 
-  public getRepository(repositoryType: new (...args: any[]) => T): T {
-    return this.repositories.get(repositoryType) as T;
+  public getRepository<R>(repositoryType: new (...args: never[]) => R): R {
+    return this.repositories.get(repositoryType) as R;
   }
 }
