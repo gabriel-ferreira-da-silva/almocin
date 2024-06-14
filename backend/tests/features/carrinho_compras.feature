@@ -4,28 +4,53 @@ Feature: carrinho de compras
     So that eu possa efetuar e receber meu pedido
 
 Scenario: inserir um item no carrinho de compras
-    Given O array "carrinho_compras" do "users/1"
-    When "GET /menu/0" é solicitado
-    And o "GET" responde um json com os valores "ID": "0"
-    And "Name": "Batata"
-    And "Price": "10.00"
-    And "Description": "Não é a frita"
-    And "Image": "None"
-    And "Category": "Promoção"
-    And "Availability": "0 minutos"
-    And o array "carrinho de compras" adiciona o "id": "0" no ultimo índice
-    Then o array carrinho de compras tem o item "0" adicionado
+    Given que não há itens no carrinho de compras
+    When o usuário faz uma requisição "POST" para o endpoint "/order" com as informações:
+    """{
+        "userId": "1",
+        "productsIds": ["0"]
+        "value": 20.00
+        "status": "no carrinho"
+        "cep": 12345-678
+        "estimedDeliveryTime": "15 minutos"
+       }"""
+    Then o status code da requisição é "201"
 
 Scenario: remover um item no carrinho de compras
-    Given O array "carrinho_compras" do "users/1"
-    And um elemento do array tem o valor "2" 
-    When "DELETE /carrinho/2" é solicitado
-    And todos os elementos com valores "2" são removidos do array
-    Then o carrinho não tem mais um item de "id" "2"
+    Given que há um item no carrinho de compras:
+    """{
+        "OrderId": "10",
+        ...
+        "productsIds": ["0"],
+        ...
+       }"""
+    When o usuário faz uma requisição "PUT" para o endpoint "/order/10" com as informações:
+    """{
+        "productsIds": []
+       }"""
+    Then o status code da requisição é "200"
+    And o corpo da restosta: 
+    ""{
+        "messege": "O carrinho de compras está vazio"
+      }""
 
 Scenario: editar a quantidade de um item no carrinho de compras
-    Given O array "carrinho_compras" do "users/1"
-    And "2" elementos do array tem o valor "2" 
-    When "PUT /carrinho/2-" é solicitado
-    And um valor "2" é removido de um dos elementos do array
-    Then o carrinho tem uma quantidade a menos do item de "id" "2"
+    Given que há um item no carrinho de compras:
+    """{
+        "OrderId": "10",
+        ...
+        "productsIds": ["0"],
+        ...
+       }"""
+    When o usuário faz uma requisição "PUT" para o endpoint "/order/10" com as informações:
+    """{
+        "productsIds": ["0"]
+       }"""
+    Then o status code da requisição é "200"
+    And o pedido no carrinho de compras é:
+    """{
+        "OrderId": "10",
+        ...
+        "productsIds": ["0", "0"],
+        ...
+       }"""
