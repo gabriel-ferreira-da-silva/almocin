@@ -1,0 +1,107 @@
+[33mcommit ab363c3a09e984364addc63ad2b1d78e4811dbe6[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: gabriel-ferreira-da-silva <gab_fs@outlook.co>
+Date:   Tue May 28 15:58:39 2024 -0300
+
+    feat: creation of the scenarios of cancel order and list order feature
+
+[33mcommit e25a2fe2a227181ad4d1decda98f8fe746e30482[m[33m ([m[1;31mupstream/main[m[33m)[m
+Merge: 81a3dd3 c650194
+Author: José Daniel Silva do Carmo <jdsc2@cin.ufpe.br>
+Date:   Fri May 24 10:37:20 2024 -0300
+
+    Merge pull request #11 from JDaniielC/dev
+    
+    Configure Husky and eslint. Update all dependences
+
+[33mcommit 81a3dd30029d5aaa45168a39703b2a089c8f9b59[m
+Merge: 603b3ad f793942
+Author: José Daniel Silva do Carmo <jdsc2@cin.ufpe.br>
+Date:   Wed May 22 20:40:04 2024 -0300
+
+    Merge pull request #8 from JDaniielC/JDaniielC-patch-1
+    
+    Create SECURITY.md
+
+[33mcommit 603b3ad071698ae0b847d18c0132379796864820[m
+Merge: e1f842e 07cf39c
+Author: José Daniel Silva do Carmo <jdsc2@cin.ufpe.br>
+Date:   Wed May 22 20:39:52 2024 -0300
+
+    Merge pull request #9 from JDaniielC/JDaniielC-patch-2
+    
+    Create CODE_OF_CONDUCT.md
+
+[33mcommit e1f842eb28651e176b0b58d2f48c4f0a90012881[m
+Merge: 246b297 95ed987
+Author: José Daniel Silva do Carmo <jdsc2@cin.ufpe.br>
+Date:   Wed May 22 20:39:41 2024 -0300
+
+    Merge pull request #10 from JDaniielC/JDaniielC-patch-3
+    
+    Update issue templates
+
+[33mcommit c650194d495ed60c8da07b7f09858b5aaf366d6c[m[33m ([m[1;31mupstream/dev[m[33m)[m
+Author: jdaniielc <jdsc2@cin.ufpe.br>
+Date:   Wed May 22 19:10:19 2024 -0300
+
+    Chore: setup eslint
+
+[33mcommit 861f7294115fa7b633a4ab6d83b66e568864e426[m
+Author: jdaniielc <jdsc2@cin.ufpe.br>
+Date:   Wed May 22 19:09:43 2024 -0300
+
+    FEAT: Update dependences to lts
+
+[33mcommit 27d84561fc028730fad7da7c211a2df8a8409859[m
+Author: jdaniielc <jdsc2@cin.ufpe.br>
+Date:   Wed May 22 15:21:57 2024 -0300
+
+    FEAT: Update husky for last version
+
+[33mcommit c2562c8e1416771d14078ee50eab5eb2a93b1408[m
+Author: jdaniielc <jdsc2@cin.ufpe.br>
+Date:   Wed May 22 15:15:28 2024 -0300
+
+    fix: update dependences and fix lint and start scripts
+
+[33mcommit 6b5645c258d156f5df42138799035527d5f471d1[m
+Author: jdaniielc <jdsc2@cin.ufpe.br>
+Date:   Wed May 22 14:56:32 2024 -0300
+
+    CHORE: Add husky setup for monorepo
+
+[33mcommit c62860d3b4f08601be9ec9779925e157355318ba[m
+Author: jdaniielc <jdsc2@cin.ufpe.br>
+Date:   Wed May 22 14:02:16 2024 -0300
+
+    REFACTOR: Turn husky verification for a monorepo
+
+[33mcommit 95ed98788635727855696de835d0d0025e0ca763[m
+Author: José Daniel Silva do Carmo <jdsc2@cin.ufpe.br>
+Date:   Wed May 22 13:44:52 2024 -0300
+
+    Update issue templates
+
+[33mcommit 07cf39c35ebc94781dcfb29488f8e3e78b0ad748[m
+Author: José Daniel Silva do Carmo <jdsc2@cin.ufpe.br>
+Date:   Wed May 22 13:42:30 2024 -0300
+
+    Create CODE_OF_CONDUCT.md
+
+[33mcommit f793942cb75307b6c604ca641e45f806db68210c[m
+Author: José Daniel Silva do Carmo <jdsc2@cin.ufpe.br>
+Date:   Wed May 22 13:36:03 2024 -0300
+
+    Create SECURITY.md
+
+[33mcommit 246b2970d92c233e577eb100ab6629e655e389b5[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: jdaniielc <jdsc2@cin.ufpe.br>
+Date:   Tue May 21 10:16:50 2024 -0300
+
+    CHORE: backend & frontend template
+
+[33mcommit 69cafae2a5c70e2eca4467a76d261bb41cc59877[m
+Author: José Daniel Silva do Carmo <jdsc2@cin.ufpe.br>
+Date:   Tue May 21 10:11:58 2024 -0300
+
+    Initial commit
