@@ -4,7 +4,7 @@ Feature: carrinho de compras
     So that eu possa efetuar e receber meu pedido
 
 Scenario: inserir um item no carrinho de compras
-    Given que não há itens no carrinho de compras
+    Given há "0" itens no "carrinho de compras"
     When o usuário faz uma requisição "POST" para o endpoint "/order" com as informações:
     """{
         "userId": "1",
@@ -15,11 +15,18 @@ Scenario: inserir um item no carrinho de compras
         "estimedDeliveryTime": "15 minutos"
        }"""
     Then o status code da requisição é "201"
+    And o corpo da resposta: 
+    ""{
+        "message": "Novo item no carrinho"
+      }""
+    And o "carrinho de compras" está com as seguintes informações:
+        | orderId | userID | productsIds | value |   status    | cep       | estimedDeliveryTime |
+        |    10   |    1   |      [0]    | 20.00 | no carrinho | 12345-678 |      15 minutos     |
 
 Scenario: remover um item no carrinho de compras
-    Given que há um item no carrinho de compras:
+    Given há "1" item no "carrinho de compras":
     """{
-        "OrderId": "10",
+        "orderId": "10",
         ...
         "productsIds": ["0"],
         ...
@@ -29,15 +36,18 @@ Scenario: remover um item no carrinho de compras
         "productsIds": []
        }"""
     Then o status code da requisição é "200"
-    And o corpo da restosta: 
+    And o corpo da resposta: 
     ""{
-        "messege": "O carrinho de compras está vazio"
+        "message": "O carrinho de compras está vazio"
       }""
+    And o "carrinho de compras" está com as seguintes informações:
+        | orderId | userID | productsIds | value |   status    |    cep    | estimedDeliveryTime |
+        |    10   |    1   |      []     |   0   | no carrinho | 12345-678 |      15 minutos     |
 
 Scenario: editar a quantidade de um item no carrinho de compras
-    Given que há um item no carrinho de compras:
+    Given há "1" item no "carrinho de compras":
     """{
-        "OrderId": "10",
+        "orderId": "10",
         ...
         "productsIds": ["0"],
         ...
@@ -47,10 +57,10 @@ Scenario: editar a quantidade de um item no carrinho de compras
         "productsIds": ["0"]
        }"""
     Then o status code da requisição é "200"
-    And o pedido no carrinho de compras é:
-    """{
-        "OrderId": "10",
-        ...
-        "productsIds": ["0", "0"],
-        ...
-       }"""
+    And o corpo da resposta: 
+    ""{
+        "message": "Quantidade do item alterada no carrinho"
+      }""
+    And o pedido no "carrinho de compras" é:
+        | orderId | userID | productsIds | value |   status    |    cep    | estimedDeliveryTime |
+        |    10   |    1   |    [0, 0]   | 40.00 | no carrinho | 12345-678 |      15 minutos     |
