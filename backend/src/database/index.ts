@@ -1,4 +1,5 @@
 import ItemMenuEntity from '../entities/item-menu.entity';
+import PedidoEntity from '../entities/pedido.entity';
 
 export default class Database {
   data: { [key: string]: any[] };
@@ -65,6 +66,20 @@ export default class Database {
         ...category,
         createdAt: new Date(),
         active: linkItemsCategories.includes(category.id) ?? Math.random() > 0.5
+      })),
+      pedido: items.map((item, index) => new PedidoEntity({
+        id: `pedido-id-${index}`,
+        userID: "1",
+        pedidoId:"1",
+        status: "in makeing",
+        name: item,
+        items:items,
+        description: `Descrição do ${item}`,
+        totalPrice: Math.floor(Math.random() * 10), // 0 - 9
+        totalPrepareTime: Math.floor(Math.random() * 60) + 15, // 15 - 75 minutes
+        totalDeliveryTime: Math.floor(Math.random() * 60) + 15, // 15 - 75 minutes
+        createdAt: new Date(),
+        active: Math.random() > 0.5, // 50%
       })),
     };
   }

@@ -1,6 +1,7 @@
 {
   "name": "backend-nodejs-ess",
   "version": "0.1.0",
+  "type": "module", 
   "description": "",
   "scripts": {
     "start": "env-cmd -f .env nodemon --watch 'src/**/*.ts' --exec ts-node src/index.ts",
