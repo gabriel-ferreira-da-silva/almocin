@@ -18,11 +18,11 @@ class PedidoController {
 
   private initRoutes() {
     this.router.get(this.prefix, (req: Request, res: Response) =>
-      this.getItems(req, res)
+      this.getPedidos(req, res)
     );
   }
 
-  private async getItems(req: Request, res: Response) {
+  private async getPedidos(req: Request, res: Response) {
     const menu = await this.pedidoService.getPedidos();
 
     return new SuccessResult({

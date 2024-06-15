@@ -32,3 +32,11 @@ di.registerService(
   )
 );
 
+di.registerService(
+  PedidoService,
+  new PedidoService(
+    di.getRepository(PedidoRepository),
+    di.getRepository(MenuRepository),
+    di.getRepository(CategoryRepository)
+  )
+);
