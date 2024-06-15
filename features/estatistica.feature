@@ -4,8 +4,9 @@ Feature: Estatísticas
     So that I can monitor and analyze the system's usage and its profitability.
 
 
-Scenario: acesso às estatísticas do restaurante
-Given estou logado com nome "admin", senha "admin" e função "admin"
-And estou na página "Home" 
-When acesso a página "Estatísticas"
-Then estou na página "Estatísticas"
+Scenario: visualizar estatísticas do restaurante
+Given estou logado com nome "admin"
+And estou na página "Home"
+When acesso a página "Estatistica"
+Then estou na página "Estatistica"
+And consigo ver "totalUsers", "totalitems", "totalOrders", "monthOrders", "totalRevenue", "monthRevenue" e "averageTicket"
