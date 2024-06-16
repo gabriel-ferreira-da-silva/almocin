@@ -1,7 +1,7 @@
 Feature: Serviços de historico de pedidos
 
 Background:
-  Given no serviço "pedidoService" têm os métodos "getPedidos",
+  Given no serviço "pedidoService" têm os métodos "getPedidos" e "getUserPedidos"
   And no repository "pedidoRepository" há os itens:
     | id | userId | itemsId | status | 
     | 0  |  0     | [0,1]   | "entregue"|
@@ -28,11 +28,21 @@ Scenario: Listar todos os pedidos
     | 3  |  1     | [3,2]   | "entregue"|
     | 4  |  2     | [0,2]   | "entregue"|
   
-  Scenario: Listar todos os pedidos de usuario
+Scenario: Listar todos os pedidos de usuario
   Given o método "getUserPedidos" recebe o parametro "userId"="1"
-  And o método "getPedidos" retorna todos os itens de "pedidoRepository" onde o campo "userId"="1"
+  And o método "getUserPedidos" retorna todos os itens de "pedidoRepository" onde o campo "userId"="1"
   When o método "getUserPedidos" com parametro "userId"="1" é chamado
   Then o método retorna todos os itens :
     | id | userId | itemsId | status | 
     | 1  |  1     | [1,2,3]   | "em preparo"|
     | 3  |  1     | [3,2]   | "entregue"|
+  
+  Scenario: Erro ao listar pedidos de usuario
+    Given o método "getUserPedidos" recebe o parametro "userId"="1000"
+    And não existe usuário com "userId"="1000"
+    When o método "getUserPedidos" com parametro "userId"="1000" é chamado
+    Then uma mensagem:
+      "{
+      message: usuario nao encontrado
+      }"
+    é enviada para o requisidor
