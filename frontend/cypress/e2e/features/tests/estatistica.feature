@@ -1,12 +1,11 @@
-Feature: Estatísticas
+Feature: Statistics
     As an administrator
     I want to view various performance metrics
     So that I can monitor and analyze the system's usage and its profitability.
 
 
-Scenario: visualizar estatísticas do restaurante
-Given estou logado com nome "admin"
-And estou na página "Home"
-When acesso a página "Estatistica"
-Then estou na página "Estatistica"
-And consigo ver "totalUsers", "totalitems", "totalOrders", "monthOrders", "totalRevenue", "monthRevenue" e "averageTicket"
+Scenario: visualize statistics
+Given I am at page "Home"
+When I acess page "statistics"
+Then I am at page "statistics"
+And I can see "totalUsers", "totalitems", "totalOrders", "monthOrders", "totalRevenue", "monthRevenue" e "averageTicket"
