@@ -34,4 +34,4 @@ Given "Rodrigo Real" created "Link de compartilhamento" with "pvac"
 And I am logged as "Rodrigo Real" on the system
 When I access "Link de compartilhamento"
 Then I am at page "Link de compartilhamento"
-And I see "Rodrigo Real" as the link owner, "custo da compra", "itens da compra","status da compra"
+And I see "Rodrigo Real" as the link owner, "custo da compra", "itens da compra", "status da compra"
