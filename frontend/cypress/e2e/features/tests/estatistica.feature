@@ -6,6 +6,6 @@ Feature: Statistics
 
 Scenario: visualize statistics
 Given I am at page "Home"
-When I acess page "statistics"
-Then I am at page "statistics"
+When I access page "Statistics"
+Then I am at page "Statistics"
 And I can see "totalUsers", "totalitems", "totalOrders", "monthOrders", "totalRevenue", "monthRevenue" e "averageTicket"
