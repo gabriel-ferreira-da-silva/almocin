@@ -32,6 +32,22 @@ class PedidoService {
     return model;
   }
 
+  public async updatePedido(id: string, data: PedidoEntity): Promise<PedidoModel> {
+    const entity = await this.pedidoRepository.updatePedido(id, data);
+
+    if (!entity) {
+      throw new HttpNotFoundError({
+        msg: 'Não encontrado',
+        msgCode: 'Item não encontrado no cardápio',
+      });
+    }
+    const model = new PedidoModel({
+      ...entity,
+      items: [],
+    });
+    return model;
+  }
+
 }
 
 export default PedidoService;

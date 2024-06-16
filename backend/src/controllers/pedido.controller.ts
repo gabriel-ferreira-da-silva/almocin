@@ -20,6 +20,9 @@ class PedidoController {
     this.router.get(this.prefix, (req: Request, res: Response) =>
       this.getPedidos(req, res)
     );
+    this.router.put(`${this.prefix}/:id`, (req: Request, res: Response) =>
+      this.updatePedido(req, res)
+    );
   }
 
   private async getPedidos(req: Request, res: Response) {
@@ -28,6 +31,18 @@ class PedidoController {
     return new SuccessResult({
       msg: Result.transformRequestOnMsg(req),
       data: menu,
+    }).handle(res);
+  }
+
+  private async updatePedido(req: Request, res: Response) {
+    const item = await this.pedidoService.updatePedido(
+      req.params.id,
+      new PedidoEntity(req.body)
+    );
+
+    return new SuccessResult({
+      msg: Result.transformRequestOnMsg(req),
+      data: item,
     }).handle(res);
   }
 
