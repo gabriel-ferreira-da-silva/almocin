@@ -71,7 +71,7 @@ Scenario: Remover um item do cardápio
   And a lista de itens no "cardápio" é:
     | id | name   | price | description    | image | category | timeToPrepare |
 
-Scenario: Adicionar um item sem nome ou preço ao cardápio
+Scenario: Adicionar um item sem nome ao cardápio
   Given que não há itens registrados no "cardápio"
   When o usuário faz uma requisição "POST" para o endpoint "/menu" com as informações:
     """
@@ -93,6 +93,9 @@ Scenario: Adicionar um item sem nome ou preço ao cardápio
     """
   And a lista de itens no "cardápio" é:
     | id | name   | price | description    | image | category | timeToPrepare |
+  
+Scenario: Adicionar um item sem preço no cardápio
+  Given que não há itens registrados no "cardápio"
   When o usuário faz uma requisição "POST" para o endpoint "/menu" com as informações:
     """
     {
@@ -114,7 +117,7 @@ Scenario: Adicionar um item sem nome ou preço ao cardápio
   And a lista de itens no "cardápio" é:
     | id | name   | price | description    | image | category | timeToPrepare |
 
-Scenario: Atualizar um item com informações inválidas
+Scenario: Atualizar um item com informações preço inválido
   Given que há um item registrado no "cardápio" com as informações:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
@@ -133,6 +136,11 @@ Scenario: Atualizar um item com informações inválidas
     }
     """
   And a lista de itens no "cardápio" é:
+    | id | name   | price | description    | image | category | timeToPrepare |
+    | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
+  
+Scenario: Atualizar um item com informações preço negativo
+  Given que há um item registrado no "cardápio" com as informações:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
   When o usuário faz uma requisição "PUT" para o endpoint "/menu/0" com as informações:
@@ -185,13 +193,13 @@ Scenario: Tentar enviar nenhuma informação para atualizar um item
   Given que há um item registrado no "cardápio" com as informações:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
-  When o usuário faz uma requisição "PUT" para o endpoint "/menu" sem payload:
+  When o usuário faz uma requisição "PUT" para o endpoint "/menu/0" sem payload:
   Then o item "Batata" não é atualizado no cardápio
-  And o status code da resposta é "400"
+  And o status code da resposta é "200"
   And o corpo da resposta é:
     """
     {
-      "message": "O nome é requerido"
+      "message": "Item Batata atualizado no cardápio"
     }
     """
   And a lista de itens no "cardápio" é:
