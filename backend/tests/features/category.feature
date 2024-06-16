@@ -29,7 +29,7 @@ Feature: Categorias
         "message": "Categoria 'Sobremesas' criada com sucesso"
       }
       """
-    And a lista de Categorias deve ser:
+    And a lista de "Categoria" deve ser:
       | ID | Name        |
       | 0  | Promoção    |
       | 1  | Bebidas     |
@@ -52,7 +52,7 @@ Feature: Categorias
         "message": "Categoria 'Bebidas' atualizada para 'Infantil' com sucesso"
       }
       """
-    And a lista de Categorias deve ser:
+    And a lista de "Categoria" deve ser:
       | ID | Name         |
       | 0  | Promoção     |
       | 1  | Infantil     |
@@ -70,7 +70,7 @@ Feature: Categorias
         "message": "Categoria 'Promoção' deletada com sucesso"
       }
       """
-    And a lista de Categorias deve ser:
+    And a lista de "Categoria" deve ser:
       | ID | Name         |
       | 1  | Bebidas      |
       | 2  | Vegetariano  |
@@ -92,7 +92,7 @@ Feature: Categorias
         "message": "Categoria 'Bebidas' não pode ser deletada pois possui itens associados"
       }
       """
-    And a lista de Categorias deve ser:
+    And a lista de "Categoria" deve ser:
       | ID | Name         |
       | 0  | Promoção     |
       | 1  | Bebidas      |
@@ -115,7 +115,7 @@ Feature: Categorias
         "message": "Categoria 'Vegetariano' já existe"
       }
       """
-    And a lista de Categorias deve ser:
+    And a lista de "Categoria" deve ser:
       | ID | Name         |
       | 0  | Promoção     |
       | 1  | Bebidas      |
@@ -138,7 +138,7 @@ Feature: Categorias
         "message": "Categoria 'Jantar' já existe"
       }
       """
-    And a lista de Categorias deve ser:
+    And a lista de "Categoria" deve ser:
       | ID | Name         |
       | 0  | Promoção     |
       | 1  | Bebidas      |
@@ -156,7 +156,7 @@ Feature: Categorias
         "message": "Categoria não existe"
       }
       """
-    And a lista de Categorias deve ser:
+    And a lista de "Categoria" deve ser:
       | ID | Name         |
       | 0  | Promoção     |
       | 1  | Bebidas      |
