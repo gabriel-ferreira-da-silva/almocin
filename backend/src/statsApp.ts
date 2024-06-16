@@ -5,7 +5,7 @@ import path from 'path';
 const app = express();
 app.use(express.json());
 
-const jsonFilePath = path.join(__dirname, 'data.json');
+const jsonFilePath = path.join(__dirname, 'stats.json');
 
 // Function to read JSON file
 const readJsonFile = (filePath: string): any => {
