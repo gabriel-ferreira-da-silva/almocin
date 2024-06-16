@@ -127,5 +127,45 @@ Scenario: Deletar uma categoria
   Given o método "deleteCategory" têm como parâmetros "id"
   And o método "deleteCategory" retorna nada
   When o método é chamado com o parâmetro "id: 2"
-  Then a categoria é apagada do "CategoryRepository"
+  Then a "categoria" é apagada do "CategoryRepository"
   And o método retorna nada
+
+Scenario: Deletar uma categoria com itens
+  Given o método "deleteCategory" têm como parâmetros "id"
+  When o método é chamado com o parâmetro "id: 1"
+  Then a "categoria" não é apagada do "CategoryRepository"
+  And o método retorna uma mensagem "Não é possível deletar uma categoria com itens associados."
+
+Scenario: Tentar criar uma categoria com nome já existente
+  Given o método "createCategory" têm como parâmetros "data: Category"
+  And para os parâmetros:
+  """
+    data: {
+      name: "Bebidas",
+      itemsId: []
+    }
+  """ 
+  o método "createCategory" retorna uma mensagem "Categoria já existente."
+  When o método é chamado com o parâmetro 
+  """
+    data: {name: 'Bebidas', itemsId: []}"
+  """
+  Then o método retorna uma mensagem "Categoria já existente."
+
+Scenario: Tentar modificar uma categoria com nome já existente
+  Given o método "updateCategory" têm como parâmetros "id" e "data: Category"
+  And para os parâmetros:
+  """
+    id: 1
+    data: {
+      name: "Bebidas",
+      itemsId: []
+    }
+  """ 
+  o método "updateCategory" retorna uma mensagem "Categoria já existente."
+  When o método é chamado com o parâmetro 
+  """
+    id: 1
+    data: {name: 'Bebidas', itemsId: []}"
+  """
+  Then o método retorna uma mensagem "Categoria já existente."
