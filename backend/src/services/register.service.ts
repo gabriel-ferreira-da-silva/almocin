@@ -1,82 +1,79 @@
 import UserEntity from '../entities/user.entity';
+import UserModel from '../models/user.model';
 import UserRepository from '../repositories/user.repository';
-import { HttpBadRequestError, HttpNotFoundError } from '../utils/errors/http.error';
+import { HttpNotFoundError, HttpBadRequestError } from '../utils/errors/http.error';
 
-class RegisterService {
+class UserService {
   private userRepository: UserRepository;
 
   constructor(userRepository: UserRepository) {
     this.userRepository = userRepository;
   }
 
-  public async createUser(data: UserEntity): Promise<UserEntity> {
-    // Verificar se já existe um usuário com o mesmo CPF ou e-mail
-    const existingUser = await this.userRepository.findOne(
-      (user) => user.cpf === data.cpf || user.email === data.email
-    );
-
-    if (existingUser) {
-      throw new HttpBadRequestError({
-        msg: 'User with the same CPF or email already exists',
-        msgCode: 'user_conflict',
-      });
-    }
-
-    const newUser = await this.userRepository.add(data);
-    return newUser;
+  public async getUsers(): Promise<UserModel[]> {
+    const entities = await this.userRepository.getUsers();
+    return entities.map(entity => new UserModel(entity));
   }
 
-  public async getUsers(): Promise<UserEntity[]> {
-    return await this.userRepository.getUsers();
-  }
-
-  public async getUser(id: string): Promise<UserEntity> {
-    const user = await this.userRepository.getUser(id);
-
-    if (!user) {
+  public async getUser(id: string): Promise<UserModel> {
+    const entity = await this.userRepository.getUser(id);
+    if (!entity) {
       throw new HttpNotFoundError({
         msg: 'User not found',
         msgCode: 'user_not_found',
       });
     }
-
-    return user;
+    return new UserModel(entity);
   }
 
-  public async updateUser(
-    id: string,
-    data: Partial<UserEntity>
-  ): Promise<UserEntity | null> {
-    // Verificar se já existe um usuário com o mesmo CPF ou e-mail (excluindo o próprio usuário)
-    if (data.cpf || data.email) {
-      const existingUser = await this.userRepository.findOne(
-        (user) =>
-          (user.cpf === data.cpf || user.email === data.email) && user.id !== id
-      );
+  public async createUser(data: UserEntity): Promise<UserModel> {
+    const existingUserByEmail = await this.userRepository.findOneByEmail(data.email);
+    if (existingUserByEmail) {
+      throw new HttpNotFoundError({ msg: 'User with this email already exists' });
+    }
+  
+    const existingUserByCpf = await this.userRepository.findOneByCpf(data.cpf);
+    if (existingUserByCpf) {
+      throw new HttpNotFoundError({ msg: 'User with this CPF already exists' });
+    }
+  
+    const entity = await this.userRepository.createUser(data);
+    return new UserModel(entity);
+  }
 
-      if (existingUser) {
-        throw new HttpBadRequestError({
-          msg: 'User with the same CPF or email already exists',
-          msgCode: 'user_conflict',
-        });
+  public async updateUser(id: string, data: Partial<UserEntity>): Promise<UserModel> {
+    if (data.email && typeof data.email !== 'string') {
+      throw new HttpBadRequestError({ msg: 'Email must be a string' });
+    }
+  
+    if (data.cpf && typeof data.cpf !== 'string') {
+      throw new HttpBadRequestError({ msg: 'CPF must be a string' });
+    }
+  
+    if (data.email) {
+      const existingUserByEmail = await this.userRepository.findOneByEmail(data.email);
+      if (existingUserByEmail && existingUserByEmail.id !== id) {
+        throw new HttpNotFoundError({ msg: 'User with this email already exists' });
       }
     }
-
-    const updatedUser = await this.userRepository.update((user) => user.id === id, data);
-
-    if (!updatedUser) {
-      throw new HttpNotFoundError({
-        msg: 'User not found',
-        msgCode: 'user_not_found',
-      });
+  
+    if (data.cpf) {
+      const existingUserByCpf = await this.userRepository.findOneByCpf(data.cpf);
+      if (existingUserByCpf && existingUserByCpf.id !== id) {
+        throw new HttpNotFoundError({ msg: 'User with this CPF already exists' });
+      }
     }
-
-    return updatedUser;
+  
+    const entity = await this.userRepository.updateUser(id, data);
+    if (!entity) {
+      throw new HttpNotFoundError({ msg: 'User not found' });
+    }
+    return new UserModel(entity);
   }
 
   public async deleteUser(id: string): Promise<void> {
-    await this.userRepository.delete((user) => user.id !== id);
+    await this.userRepository.deleteUser(id);
   }
 }
 
-export default RegisterService;
+export default UserService;

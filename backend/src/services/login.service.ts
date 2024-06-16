@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Request } from 'express';
-import { HttpNotFoundError} from '../utils/errors/http.error';
+import { HttpNotFoundError } from '../utils/errors/http.error';
 import UserRepository from '../repositories/user.repository';
 
 class LoginService {

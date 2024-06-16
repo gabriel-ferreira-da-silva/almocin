@@ -12,7 +12,7 @@ export default class UserEntity extends BaseEntity {
   recoveryQuestion: string;
 
   constructor(data: Partial<UserEntity>) {
-    super(data.id || uuidv4()); // Gerar um UUID se o ID não for fornecido
+    super(data.id || uuidv4()); 
     this.name = data.name!;
     this.email = data.email!;
     this.gender = data.gender!;

@@ -15,7 +15,7 @@ class LoginController {
 
   private initRoutes() {
     this.router.post(this.prefix, (req: Request, res: Response) => this.login(req, res));
-    this.router.delete(this.prefix, (req: Request, res: Response) => this.logout(req, res));
+    this.router.post(`${this.prefix}/logout`, (req: Request, res: Response) => this.logout(req, res)); // Mudança para POST
   }
 
   private async login(req: Request, res: Response) {
@@ -44,7 +44,7 @@ class LoginController {
     }
   }
 
-  private async logout(req: Request, res: Response) {
+  private logout(req: Request, res: Response) {
     res.clearCookie('session_token');
     return res.status(200).json({ msg: 'Logout successful' });
   }

@@ -18,20 +18,27 @@ class UserRepository extends BaseRepository<UserEntity> {
     return await this.add(data);
   }
 
-  public async updateUser(
-    id: string,
-    data: UserEntity
-  ): Promise<UserEntity | null> {
-    return await this.update((item) => item.id === id, data);
+  public async updateUser(id: string, data: Partial<UserEntity>): Promise<UserEntity | null> {
+    const user = await this.findOne((item) => item.id === id);
+    if (!user) {
+      return null;
+    }
+    const updatedUser = { ...user, ...data };
+    await this.update((item) => item.id === id, updatedUser);
+    return updatedUser;
   }
 
   public async deleteUser(id: string): Promise<void> {
-    await this.delete((item) => item.id !== id);
+    await this.delete((item) => item.id === id);
   }
+
   public async findOneByEmail(email: string): Promise<UserEntity | null> {
     return await this.findOne((item) => item.email === email);
   }
-  
+
+  public async findOneByCpf(cpf: string): Promise<UserEntity | null> {
+    return await this.findOne((item) => item.cpf === cpf);
+  }
 }
 
 export default UserRepository;
