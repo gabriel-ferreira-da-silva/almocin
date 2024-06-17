@@ -20,6 +20,10 @@ class OrderController {
       this.getOrders(req, res)
     );
 
+    this.router.get(`${this.prefix}/byUser/:userID`, (req: Request, res: Response) =>
+      this.getOrdersByUserId(req, res)
+    );
+
     this.router.post(this.prefix, (req: Request, res: Response) =>
       this.createOrder(req, res)
     );
@@ -32,6 +36,18 @@ class OrderController {
       msg: Result.transformRequestOnMsg(req),
       data: order,
     }).handle(res);
+  }
+
+  private async getOrdersByUserId(req: Request, res: Response) {
+    const userID = req.params.userID || req.query.userID;
+
+    if(userID){
+      const order = await this.orderService.getOrdersByUserId(userID.toString());
+      return new SuccessResult({
+        msg: Result.transformRequestOnMsg(req),
+        data: order,
+      }).handle(res);
+    }
   }
 
   private async createOrder(req: Request, res: Response) {

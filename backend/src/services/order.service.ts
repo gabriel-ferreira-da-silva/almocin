@@ -24,6 +24,19 @@ class OrderService {
     }));
     return model;
   }
+  public async getOrdersByUserId(userId: string): Promise<OrderModel[]> {
+    const entity = await this.orderRepository.getOrders();    
+    const menu = await this.menuRepository.getItems();
+    
+    const model = entity
+      .filter(order => order.userID === userId)  // Filter orders by userId
+      .map((item) => new OrderModel({
+        ...item,  // Spread the properties of the order entity
+        items: menu.filter(el => item.itemsId.includes(el.id)),  // Filter menu items to include only those with ids in item.itemsId
+      }));
+    
+    return model;
+}
 
   public async createOrder(data: OrderEntity): Promise<OrderModel> {
     const orderEntity = new OrderEntity(data);
