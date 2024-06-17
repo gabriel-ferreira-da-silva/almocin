@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Request } from 'express';
-import { HttpNotFoundError } from '../utils/errors/http.error';
+import { HttpNotFoundError,HttpBadRequestError } from '../utils/errors/http.error';
 import UserRepository from '../repositories/user.repository';
 
 class LoginService {
@@ -48,6 +48,19 @@ class LoginService {
     } catch (error) {
       return null;
     }
+  }
+  public async resetPassword(email: string, recoveryQuestion: string, newPassword: string): Promise<void> {
+    const user = await this.userRepository.findOneByEmail(email);
+    if (!user) {
+      throw new HttpNotFoundError({ msg: 'User not found' });
+    }
+
+    if (user.recoveryQuestion !== recoveryQuestion) {
+      throw new HttpBadRequestError({ msg: 'Invalid recovery question' });
+    }
+
+    user.password = newPassword;
+    await this.userRepository.updateUser(user.id, user);
   }
 }
 
