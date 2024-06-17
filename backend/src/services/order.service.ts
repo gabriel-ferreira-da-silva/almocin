@@ -56,7 +56,7 @@ class OrderService {
 
     const address = `${cepResult.street} ${cepResult.neighborhood} ${cepResult.city}, ${cepResult.state}`;
 
-    const googleApiKey = 'AIzaSyDt2t8-Q1LYyEC37XykoWq5pOJohzV4RG4';
+    const googleApiKey = process.env.GOOGLE_API_KEY;
     const response = await axios.get('https://maps.googleapis.com/maps/api/distancematrix/json', {
       params: {
         destinations: address,
