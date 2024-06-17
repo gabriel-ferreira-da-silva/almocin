@@ -26,11 +26,11 @@ class OrderController {
   }
 
   private async getOrders(req: Request, res: Response) {
-    const menu = await this.orderService.getOrders();
+    const order = await this.orderService.getOrders();
 
     return new SuccessResult({
       msg: Result.transformRequestOnMsg(req),
-      data: menu,
+      data: order,
     }).handle(res);
   }
 
