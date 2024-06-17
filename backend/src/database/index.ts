@@ -69,7 +69,7 @@ export default class Database {
         active: linkItemsCategories.includes(category.id) ?? Math.random() > 0.5
       })),
 
-      pedido: items.map((item, index) => new OrderEntity({
+      order: items.map((item, index) => new OrderEntity({
         itemsId:items,
         userID: "1",
         id: `pedido-id-${index}`,
