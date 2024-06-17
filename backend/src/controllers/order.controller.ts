@@ -27,6 +27,10 @@ class OrderController {
     this.router.put(`${this.prefix}/:id`, (req: Request, res: Response) =>
       this.updateOrder(req, res)
     );
+
+    this.router.get(`${this.prefix}/delivery-time/:cep`, (req: Request, res: Response) =>
+      this.getDeliveryTime(req, res)
+    );
   }
 
   private async getOrders(req: Request, res: Response) {
@@ -56,6 +60,16 @@ class OrderController {
     return new SuccessResult({
       msg: Result.transformRequestOnMsg(req),
       data: updatedOrder,
+    }).handle(res);
+  }
+
+  private async getDeliveryTime(req: Request, res: Response) {
+    const cep = req.params.cep;
+    const deliveryTime = await this.orderService.calculateDeliveryTime(cep);
+
+    return new SuccessResult({
+      msg: 'Tempo de entrega calculado com sucesso',
+      data: deliveryTime,
     }).handle(res);
   }
 }

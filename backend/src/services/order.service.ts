@@ -47,7 +47,7 @@ class OrderService {
     });
   }
 
-  private async calculateDeliveryTime(cepValue: string): Promise<number> {
+  public async calculateDeliveryTime(cepValue: string): Promise<number> {
     const cepResult = await cep(cepValue);
 
     if (!cepResult || !cepResult.street || !cepResult.neighborhood || !cepResult.city || !cepResult.state) {
@@ -60,7 +60,8 @@ class OrderService {
     const response = await axios.get('https://maps.googleapis.com/maps/api/distancematrix/json', {
       params: {
         destinations: address,
-        origins: 'Washington, DC, USA', // Substituir pela origem real
+        origins: 'place_id:${ChIJqzBUEeIbqwcR0x2hkcrMziA}', // PlaceID do CIn
+        units: 'metrics',
         key: googleApiKey,
       },
     });
