@@ -11,7 +11,7 @@ Background: Usuário com permissão para manipular o cardápio
     | id | name   | price | description    | image | category | timeToPrepare |
 
 Scenario: Adicionar um novo item ao cardápio
-  Given que não há itens registrados no "cardápio"
+  Given que não há itens registrados no Cardápio
   When o usuário faz uma requisição "POST" para o endpoint "/menu" com as informações:
     """
     {
@@ -30,12 +30,12 @@ Scenario: Adicionar um novo item ao cardápio
       "message": "Item Batata adicionado ao cardápio"
     }
     """
-  And a lista de itens no "cardápio" é:
+  And a lista de itens no Cardápio é:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
 
 Scenario: Atualizar um item do cardápio
-  Given que há um item registrado no "cardápio" com as informações:
+  Given que há um item registrado no Cardápio com as informações:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
   And a informação requerida para atualizar é "name"
@@ -52,12 +52,12 @@ Scenario: Atualizar um item do cardápio
       "message": "Item Batata atualizado no cardápio"
     }
     """
-  And a lista de itens no "cardápio" é:
+  And a lista de itens no Cardápio é:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 15.00 | Não é a frita  | None  | Promoção | 0 minutos    |
 
 Scenario: Remover um item do cardápio
-  Given que há um item registrado no "cardápio" com as informações:
+  Given que há um item registrado no Cardápio com as informações:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
   When o usuário faz uma requisição "DELETE" para o endpoint "/menu/0"
@@ -68,11 +68,11 @@ Scenario: Remover um item do cardápio
       "message": "Item Batata removido do cardápio"
     }
     """
-  And a lista de itens no "cardápio" é:
+  And a lista de itens no Cardápio é:
     | id | name   | price | description    | image | category | timeToPrepare |
 
 Scenario: Adicionar um item sem nome ao cardápio
-  Given que não há itens registrados no "cardápio"
+  Given que não há itens registrados no Cardápio
   When o usuário faz uma requisição "POST" para o endpoint "/menu" com as informações:
     """
     {
@@ -91,11 +91,11 @@ Scenario: Adicionar um item sem nome ao cardápio
       "message": "O nome é requerido"
     }
     """
-  And a lista de itens no "cardápio" é:
+  And a lista de itens no Cardápio é:
     | id | name   | price | description    | image | category | timeToPrepare |
   
 Scenario: Adicionar um item sem preço no cardápio
-  Given que não há itens registrados no "cardápio"
+  Given que não há itens registrados no Cardápio
   When o usuário faz uma requisição "POST" para o endpoint "/menu" com as informações:
     """
     {
@@ -114,11 +114,11 @@ Scenario: Adicionar um item sem preço no cardápio
       "message": "O preço é requerido"
     }
     """
-  And a lista de itens no "cardápio" é:
+  And a lista de itens no Cardápio é:
     | id | name   | price | description    | image | category | timeToPrepare |
 
 Scenario: Atualizar um item com informações preço inválido
-  Given que há um item registrado no "cardápio" com as informações:
+  Given que há um item registrado no Cardápio com as informações:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
   When o usuário faz uma requisição "PUT" para o endpoint "/menu/0" com as informações:
@@ -135,12 +135,12 @@ Scenario: Atualizar um item com informações preço inválido
       "message": "O preço deve ser um número"
     }
     """
-  And a lista de itens no "cardápio" é:
+  And a lista de itens no Cardápio é:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
   
 Scenario: Atualizar um item com informações preço negativo
-  Given que há um item registrado no "cardápio" com as informações:
+  Given que há um item registrado no Cardápio com as informações:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
   When o usuário faz uma requisição "PUT" para o endpoint "/menu/0" com as informações:
@@ -158,12 +158,12 @@ Scenario: Atualizar um item com informações preço negativo
       "message": "O preço deve ser maior que zero"
     }
     """
-  And a lista de itens no "cardápio" é:
+  And a lista de itens no Cardápio é:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
 
 Scenario: Remover um item que não existe no cardápio
-  Given que não há itens registrados no "cardápio"
+  Given que não há itens registrados no Cardápio
   When o usuário faz uma requisição "DELETE" para o endpoint "/menu/0"
   Then o status code da resposta é "404"
   And o corpo da resposta é:
@@ -172,11 +172,11 @@ Scenario: Remover um item que não existe no cardápio
       "message": "Item Batata não existe no cardápio"
     }
     """
-  And a lista de itens no "cardápio" é:
+  And a lista de itens no Cardápio é:
     | id | name   | price | description    | image | category | timeToPrepare |
 
 Scenario: Tentar enviar nenhuma informação para adicionar um item
-  Given que não há itens registrados no "cardápio"
+  Given que não há itens registrados no Cardápio
   When o usuário faz uma requisição "POST" para o endpoint "/menu" sem payload:
   Then o item não é adicionado ao cardápio
   And o status code da resposta é "400"
@@ -186,11 +186,11 @@ Scenario: Tentar enviar nenhuma informação para adicionar um item
       "message": "O nome é requerido, o preço é requerido"
     }
     """
-  And a lista de itens no "cardápio" é:
+  And a lista de itens no Cardápio é:
     | id | name   | price | description    | image | category | timeToPrepare |
 
 Scenario: Tentar enviar nenhuma informação para atualizar um item
-  Given que há um item registrado no "cardápio" com as informações:
+  Given que há um item registrado no Cardápio com as informações:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
   When o usuário faz uma requisição "PUT" para o endpoint "/menu/0" sem payload:
@@ -202,12 +202,12 @@ Scenario: Tentar enviar nenhuma informação para atualizar um item
       "message": "Item Batata atualizado no cardápio"
     }
     """
-  And a lista de itens no "cardápio" é:
+  And a lista de itens no Cardápio é:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
 
 Scenario: Adicionar um item existente ao cardápio
-  Given que há um item no "cardápio" com as informações:
+  Given que há um item no Cardápio com as informações:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
   When o usuário faz uma requisição "POST" para o endpoint "/menu" com as informações:
@@ -229,12 +229,12 @@ Scenario: Adicionar um item existente ao cardápio
       "message": "Item Batata já existe no cardápio"
     }
     """
-  And a lista de itens no "cardápio" é:
+  And a lista de itens no Cardápio é:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
 
 Scenario: Adicionar um item com categoria inválida ao cardápio
-  Given que não há itens registrados no "cardápio"
+  Given que não há itens registrados no Cardápio
   When o usuário faz uma requisição "POST" para o endpoint "/menu" com as informações:
     """
     {
@@ -254,11 +254,11 @@ Scenario: Adicionar um item com categoria inválida ao cardápio
       "message": "A categoria é inválida"
     }
     """
-  And a lista de itens no "cardápio" é:
+  And a lista de itens no Cardápio é:
   | id | name   | price | description    | image | category | timeToPrepare |
 
 Scenario: Atualizar um item com categoria inválida
-  Given que há um item registrado no "cardápio" com as informações:
+  Given que há um item registrado no Cardápio com as informações:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
   When o usuário faz uma requisição "PUT" para o endpoint "/menu/0" com as informações:
@@ -275,6 +275,6 @@ Scenario: Atualizar um item com categoria inválida
       "message": "A categoria é inválida"
     }
     """
-  And a lista de itens no "cardápio" é:
+  And a lista de itens no Cardápio é:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
