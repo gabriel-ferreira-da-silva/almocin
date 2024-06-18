@@ -72,8 +72,7 @@ class OrderService {
       throw new Error('Não foi possível calcular o tempo de entrega.');
     }
 
-    // Obter a duração em segundos
-    const duration = distanceMatrixResult.rows[0].elements[0].duration.value;
+    const duration = Math.ceil((distanceMatrixResult.rows[0].elements[0].duration.value) / 60);
 
     return duration;
   }
