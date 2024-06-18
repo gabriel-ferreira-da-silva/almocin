@@ -46,9 +46,19 @@ export default class Database {
       { id: 'category-id-7', name: 'Gourmet' }
     ]
 
+    const orders = [
+      { id: '0', userID: "0", itemsID:["item-id-0","item-id-1"] , status:OrderStatus.concluded},
+      { id: '1', userID: "1", itemsID:["item-id-1","item-id-2","item-id-3"], status: OrderStatus.inProgress },
+      { id: '2', userID: "0", itemsID:["item-id-0","item-id-1","item-id-3"], status: OrderStatus.canceled},
+      { id: '3', userID: "1", itemsID:["item-id-2","item-id-3"],status: OrderStatus.concluded },
+      { id: '4', userID: "2", itemsID:["item-id-1","item-id-2"],status: OrderStatus.concluded},
+    ]
+
     const linkItemsCategories = items.map(() => (
       categories[Math.floor(Math.random() * categories.length)].id
     ))
+
+    
 
     Database.getInstance().data = {
       menu: items.map((item, index) => new ItemMenuEntity({
@@ -69,12 +79,12 @@ export default class Database {
         active: linkItemsCategories.includes(category.id) ?? Math.random() > 0.5
       })),
 
-      order: items.map((item, index) => new OrderEntity({
-        itemsId:items,
-        userID: Math.floor(Math.random() * 3).toString(),
-        id: `pedido-id-${index}`,
+      order: orders.map((order) => new OrderEntity({
+        itemsId:order.itemsID,
+        userID: order.userID,
+        id: order.id,
         totalPrice: Math.floor(Math.random() * 10), // 0 - 9
-        status: OrderStatus.inProgress,
+        status: order.status,
         totalDeliveryTime: Math.floor(Math.random() * 60) + 15, // 15 - 75 minutes,
         cep: "12345-678",
         address_number: Math.floor(Math.random() * 999) + 1, // 1 - 1000 address number

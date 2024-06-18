@@ -29,7 +29,7 @@ class OrderController {
     );
   }
 
-  private async getOrders(req: Request, res: Response) {
+  public async getOrders(req: Request, res: Response) {
     const order = await this.orderService.getOrders();
 
     return new SuccessResult({
