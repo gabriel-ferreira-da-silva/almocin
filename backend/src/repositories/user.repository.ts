@@ -29,7 +29,7 @@ class UserRepository extends BaseRepository<UserEntity> {
   }
 
   public async deleteUser(id: string): Promise<void> {
-    await this.delete((item) => item.id === id);
+    await this.delete((item) => item.id !== id);
   }
 
   public async findOneByEmail(email: string): Promise<UserEntity | null> {

@@ -4,15 +4,9 @@ As um usuário com permissão para manipular o cardápio
 I want adicionar, remover e atualizar um novo item
 So that eu possa manipular os itens do cardápio
 
-Background: Usuário com permissão para manipular o cardápio
-  Given que o usuário fez login com o username "admin" e senha "admin"
-  And o usuário fez login como "admin" com permissão para manipular o cardápio
-  And um item com as seguintes informações está registrado:
-    | id | name   | price | description    | image | category | timeToPrepare |
-
 Scenario: Adicionar um novo item ao cardápio
   Given que não há itens registrados no Cardápio
-  When o usuário faz uma requisição "POST" para o endpoint "/menu" com as informações:
+  When o usuário faz uma requisição "POST" para o endpoint "menu" com as informações:
     """
     {
       "name": "Batata",
@@ -38,8 +32,7 @@ Scenario: Atualizar um item do cardápio
   Given que há um item registrado no Cardápio com as informações:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
-  And a informação requerida para atualizar é "name"
-  When o usuário faz uma requisição "PUT" para o endpoint "/menu/0" com as informações:
+  When o usuário faz uma requisição "PUT" para o endpoint "menu/0" com as informações:
     """
     {
       "price": 15.00,
@@ -60,7 +53,7 @@ Scenario: Remover um item do cardápio
   Given que há um item registrado no Cardápio com as informações:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
-  When o usuário faz uma requisição "DELETE" para o endpoint "/menu/0"
+  When o usuário faz uma requisição "DELETE" para o endpoint "menu/0"
   Then o status code da resposta é "200"
   And o corpo da resposta é:
     """
@@ -73,7 +66,7 @@ Scenario: Remover um item do cardápio
 
 Scenario: Adicionar um item sem nome ao cardápio
   Given que não há itens registrados no Cardápio
-  When o usuário faz uma requisição "POST" para o endpoint "/menu" com as informações:
+  When o usuário faz uma requisição "POST" para o endpoint "menu" com as informações:
     """
     {
       "price": 10.00,
@@ -96,7 +89,7 @@ Scenario: Adicionar um item sem nome ao cardápio
   
 Scenario: Adicionar um item sem preço no cardápio
   Given que não há itens registrados no Cardápio
-  When o usuário faz uma requisição "POST" para o endpoint "/menu" com as informações:
+  When o usuário faz uma requisição "POST" para o endpoint "menu" com as informações:
     """
     {
       "name": "Batata",
@@ -121,7 +114,7 @@ Scenario: Atualizar um item com informações preço inválido
   Given que há um item registrado no Cardápio com as informações:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
-  When o usuário faz uma requisição "PUT" para o endpoint "/menu/0" com as informações:
+  When o usuário faz uma requisição "PUT" para o endpoint "menu/0" com as informações:
     """
     {
       "price": "Letra",
@@ -143,7 +136,7 @@ Scenario: Atualizar um item com informações preço negativo
   Given que há um item registrado no Cardápio com as informações:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
-  When o usuário faz uma requisição "PUT" para o endpoint "/menu/0" com as informações:
+  When o usuário faz uma requisição "PUT" para o endpoint "menu/0" com as informações:
     """
     {
       "name": "Batata",
@@ -164,7 +157,7 @@ Scenario: Atualizar um item com informações preço negativo
 
 Scenario: Remover um item que não existe no cardápio
   Given que não há itens registrados no Cardápio
-  When o usuário faz uma requisição "DELETE" para o endpoint "/menu/0"
+  When o usuário faz uma requisição "DELETE" para o endpoint "menu/0"
   Then o status code da resposta é "404"
   And o corpo da resposta é:
     """
@@ -177,7 +170,7 @@ Scenario: Remover um item que não existe no cardápio
 
 Scenario: Tentar enviar nenhuma informação para adicionar um item
   Given que não há itens registrados no Cardápio
-  When o usuário faz uma requisição "POST" para o endpoint "/menu" sem payload:
+  When o usuário faz uma requisição "POST" para o endpoint "menu" sem payload:
   Then o item não é adicionado ao cardápio
   And o status code da resposta é "400"
   And o corpo da resposta é:
@@ -193,7 +186,7 @@ Scenario: Tentar enviar nenhuma informação para atualizar um item
   Given que há um item registrado no Cardápio com as informações:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
-  When o usuário faz uma requisição "PUT" para o endpoint "/menu/0" sem payload:
+  When o usuário faz uma requisição "PUT" para o endpoint "menu/0" sem payload:
   Then o item "Batata" não é atualizado no cardápio
   And o status code da resposta é "200"
   And o corpo da resposta é:
@@ -210,7 +203,7 @@ Scenario: Adicionar um item existente ao cardápio
   Given que há um item no Cardápio com as informações:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
-  When o usuário faz uma requisição "POST" para o endpoint "/menu" com as informações:
+  When o usuário faz uma requisição "POST" para o endpoint "menu" com as informações:
     """
     {
       "name": "Batata",
@@ -235,7 +228,7 @@ Scenario: Adicionar um item existente ao cardápio
 
 Scenario: Adicionar um item com categoria inválida ao cardápio
   Given que não há itens registrados no Cardápio
-  When o usuário faz uma requisição "POST" para o endpoint "/menu" com as informações:
+  When o usuário faz uma requisição "POST" para o endpoint "menu" com as informações:
     """
     {
       "name": "Batata",
@@ -261,7 +254,7 @@ Scenario: Atualizar um item com categoria inválida
   Given que há um item registrado no Cardápio com as informações:
     | id | name   | price | description    | image | category | timeToPrepare |
     | 0  | Batata | 10.00 | Não é a frita  | None  | Promoção | 0 minutos    |
-  When o usuário faz uma requisição "PUT" para o endpoint "/menu/0" com as informações:
+  When o usuário faz uma requisição "PUT" para o endpoint "menu/0" com as informações:
     """
     {
       "category": "Inválida"

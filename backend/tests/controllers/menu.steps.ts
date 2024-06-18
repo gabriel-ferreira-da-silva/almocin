@@ -15,7 +15,9 @@ defineFeature(feature, (test) => {
 
   beforeEach(async () => {
     mockMenuRepository = di.getRepository(MenuRepository);
-    await mockMenuRepository.delete(el => el.active);
+    // Delete all data:
+    await mockMenuRepository.delete(() => false);
+    itemMenuDB = await mockMenuRepository.getItems()
   });
 
   test('Adicionar um novo item ao cardápio', ({
@@ -24,23 +26,20 @@ defineFeature(feature, (test) => {
     then,
     and
   }) => {
-    given(/^que não há itens registrados no cardápio$/, async () => {
-      itemMenuDB = await mockMenuRepository.getItems();
-      if (itemMenuDB.length > 0) {
-        await mockMenuRepository.delete(el => el.active);
-        itemMenuDB = await mockMenuRepository.getItems();
-      }
-      expect(itemMenuDB).toHaveLength(0);
+    given(/^que não há itens registrados no Cardápio$/, async () => {
+      expect(itemMenuDB.length).toEqual(0);
     });
 
-    when(/^o usuário faz uma requisição (.*) para o endpoint (.*) com as informações:$/, async (method, url, docString) => {
+    when(/^o usuário faz uma requisição (.*) para o endpoint (.*) com as informações:$/, async (method: string, url, docString) => {
       const payload = JSON.parse(docString);
-      response = await request.post(url).send(payload);
-      expect(response.request.method).toBe(method);
+      response = await request.post('/'+url.slice(1, url.length-1)).send(payload);
+      expect(response.request.method).toBe(method.slice(1, method.length-1));
     });
 
     then(/^o status code da resposta é (.*)$/, (statusCode) => {
-      expect(response.status).toBe(Number(statusCode));
+      expect(response.status).toBe(
+        Number(statusCode.slice(1, statusCode.length-1))
+      );
     });
 
     and('o corpo da resposta é:', (docString) => {
@@ -48,11 +47,11 @@ defineFeature(feature, (test) => {
       expect(response.body.message).toEqual(expectedResponse);
     });
 
-    and(/^a lista de itens no cardápio é:$/, async (table) => {
+    and(/^a lista de itens no Cardápio é:$/, async (table) => {
       const items = table.hashes();
       const menuItems = await mockMenuRepository.getItems();
       expect(menuItems.length).toBeGreaterThan(itemMenuDB.length)
-      expect(menuItems).toHaveLength(items.length);
+      expect(menuItems.length).toEqual(items.length);
       items.forEach((item: ItemMenuEntity, index: number) => {
         expect(menuItems[index].name).toBe(item.name);
         expect(menuItems[index].price).toBe(Number(item.price));
@@ -69,12 +68,10 @@ defineFeature(feature, (test) => {
     when,
     then
   }) => {
-    given(/^que há um item registrado em Cardápio com as informações:$/, async (table) => {
+    given(/^que há um item registrado no Cardápio com as informações:$/, async (table) => {
       const items = table.hashes();
-      const alreadyExists = await mockMenuRepository.findOne((el) => el.name === items[0].name);
-      if (!alreadyExists) {
-        await mockMenuRepository.createItem(items[0]);
-      }
+      await mockMenuRepository.createItem(items[0]);
+
       itemMenuDB = await mockMenuRepository.getItems();
       expect(itemMenuDB).toHaveLength(1);
       expect(itemMenuDB[0].name).toBe(items[0].name);
@@ -89,7 +86,7 @@ defineFeature(feature, (test) => {
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*) com as informações:$/, async (method, url, docString) => {
       const payload = JSON.parse(docString);
-      response = await request.put(url).send(payload);
+      response = await request.put('/'+url).send(payload);
       expect(response.request.method).toBe(method);
     });
 
@@ -106,7 +103,7 @@ defineFeature(feature, (test) => {
       const items = table.hashes();
       const menuItems = await mockMenuRepository.getItems();
       expect(menuItems).toBe(itemMenuDB.length);
-      expect(menuItems).toHaveLength(items.length);
+      expect(menuItems.length).toEqual(items.length);
       items.forEach((item: ItemMenuEntity, index: number) => {
         expect(menuItems[index].name).toBe(item.name);
         expect(menuItems[index].price).toBe(Number(item.price));
@@ -124,10 +121,8 @@ defineFeature(feature, (test) => {
   }) => {
     given(/^que há um item registrado no Cardápio com as informações:$/, async (table) => {
       const items = table.hashes();
-      const alreadyExists = await mockMenuRepository.findOne((el) => el.name === items[0].name);
-      if (!alreadyExists) {
-        await mockMenuRepository.createItem(items[0]);
-      }
+      await mockMenuRepository.createItem(items[0]);
+
       itemMenuDB = await mockMenuRepository.getItems();
       expect(itemMenuDB).toHaveLength(1);
       expect(itemMenuDB[0].name).toBe(items[0].name);
@@ -140,8 +135,8 @@ defineFeature(feature, (test) => {
       expect(itemMenuDB[0].createdAt).toBeDefined();
     });
 
-    when(/^o usuário faz uma requisição (.*) para a url (.*)$/, async (method, url) => {
-      response = await request.delete(url).send();
+    when(/^o usuário faz uma requisição "(.*)" para o endpoint "(.*)"$/, async (method, url) => {
+      response = await request.delete('/'+url).send();
       expect(response.request.method).toBe(method)
     });
 
@@ -169,17 +164,12 @@ defineFeature(feature, (test) => {
     and
   }) => {
     given(/^que não há itens registrados no Cardápio$/, async () => {
-      itemMenuDB = await mockMenuRepository.getItems();
-      if (itemMenuDB.length > 0) {
-        await mockMenuRepository.delete(el => el.active);
-        itemMenuDB = await mockMenuRepository.getItems();
-      }
-      expect(itemMenuDB).toHaveLength(0)
+      expect(itemMenuDB.length).toEqual(0)
     });
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*) com as informações:$/, async (method, url, docString) => {
       const payload = JSON.parse(docString);
-      response = await request.post(url).send(payload);
+      response = await request.post('/'+url).send(payload);
       expect(response.request.method).toBe(method);
     });
 
@@ -212,17 +202,12 @@ defineFeature(feature, (test) => {
     and
   }) => {
     given(/^que não há itens registrados no Cardápio$/, async () => {
-      itemMenuDB = await mockMenuRepository.getItems();
-      if (itemMenuDB.length > 0) {
-        await mockMenuRepository.delete(el => el.active);
-        itemMenuDB = await mockMenuRepository.getItems();
-      }
-      expect(itemMenuDB).toHaveLength(0)
+      expect(itemMenuDB.length).toEqual(0)
     });
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*) com as informações:$/, async (method, url, docString) => {
       const payload = JSON.parse(docString);
-      response = await request.post(url).send(payload);
+      response = await request.post('/'+url).send(payload);
       expect(response.request.method).toBe(method);
     });
 
@@ -256,16 +241,13 @@ defineFeature(feature, (test) => {
   }) => {
     given(/^que há um item registrado no Cardápio com as informações:$/, async (table) => {
       const items = table.hashes();
-      const alreadyExists = await mockMenuRepository.findOne((el) => el.name === items[0].name);
-      if (!alreadyExists) {
-        await mockMenuRepository.createItem(items[0]);
-      } 
+      await mockMenuRepository.createItem(items[0]); 
       itemMenuDB = await mockMenuRepository.getItems();      
     });
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*) com as informações:$/, async (method, url, docString) => {
       const payload = JSON.parse(docString);
-      response = await request.put(url).send(payload);
+      response = await request.put('/'+url).send(payload);
       expect(response.request.method).toBe(method);
     });
 
@@ -299,16 +281,13 @@ defineFeature(feature, (test) => {
   }) => {
     given(/^que há um item registrado no Cardápio com as informações:$/, async (table) => {
       const items = table.hashes();
-      const alreadyExists = await mockMenuRepository.findOne((el) => el.name === items[0].name);
-      if (!alreadyExists) {
-        await mockMenuRepository.createItem(items[0]);
-      } 
+      await mockMenuRepository.createItem(items[0]); 
       itemMenuDB = await mockMenuRepository.getItems();
     });
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*) com as informações:$/, async (method, url, docString) => {
       const payload = JSON.parse(docString);
-      response = await request.put(url).send(payload);
+      response = await request.put('/'+url).send(payload);
       expect(response.request.method).toBe(method);
     });
 
@@ -348,16 +327,11 @@ defineFeature(feature, (test) => {
     and
   }) => {
     given(/^que não há itens registrados no Cardápio$/, async () => {
-      itemMenuDB = await mockMenuRepository.getItems();
-      if (itemMenuDB.length > 0) {
-        await mockMenuRepository.delete(el => el.active);
-        itemMenuDB = await mockMenuRepository.getItems();
-      }
-      expect(itemMenuDB).toHaveLength(0)
+      expect(itemMenuDB.length).toEqual(0)
     });
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*)$/, async (method, url) => {
-      response = await request.delete(url).send();
+      response = await request.delete('/'+url).send();
       expect(response.request.method).toBe(method);
     });
 
@@ -384,16 +358,11 @@ defineFeature(feature, (test) => {
     and
   }) => {
     given(/^que não há itens registrados no Cardápio$/, async () => {
-      itemMenuDB = await mockMenuRepository.getItems();
-      if (itemMenuDB.length > 0) {
-        await mockMenuRepository.delete(el => el.active);
-        itemMenuDB = await mockMenuRepository.getItems();
-      }
-      expect(itemMenuDB).toHaveLength(0)
+      expect(itemMenuDB.length).toEqual(0)
     });
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*) sem payload:$/, async (method, url) => {
-      response = await request.post(url).send();
+      response = await request.post('/'+url).send();
       expect(response.request.method).toBe(method);
     });
 
@@ -427,15 +396,12 @@ defineFeature(feature, (test) => {
   }) => {
     given(/^que há um item registrado no Cardápio com as informações:$/, async (table) => {
       const items = table.hashes();
-      const alreadyExists = await mockMenuRepository.findOne((el) => el.name === items[0].name);
-      if (!alreadyExists) {
-        await mockMenuRepository.createItem(items[0]);
-      } 
+      await mockMenuRepository.createItem(items[0]); 
       itemMenuDB = await mockMenuRepository.getItems();
     });
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*) sem payload:$/, async (method, url) => {
-      response = await request.put(url).send();
+      response = await request.put('/'+url).send();
       expect(response.request.method).toBe(method);
     });
 
@@ -488,7 +454,7 @@ defineFeature(feature, (test) => {
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*) com as informações:$/, async (method, url, docString) => {
       const payload = JSON.parse(docString);
-      response = await request.post(url).send(payload);
+      response = await request.post('/'+url).send(payload);
       expect(response.request.method).toBe(method);
     });
 
@@ -521,17 +487,12 @@ defineFeature(feature, (test) => {
     and
   }) => {
     given(/^que não há itens registrados no Cardápio$/, async () => {
-      itemMenuDB = await mockMenuRepository.getItems();
-      if (itemMenuDB.length > 0) {
-        await mockMenuRepository.delete(el => el.active);
-        itemMenuDB = await mockMenuRepository.getItems();
-      }
-      expect(itemMenuDB).toHaveLength(0);
+      expect(itemMenuDB.length).toEqual(0);
     });
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*) com as informações:$/, async (method, url, docString) => {
       const payload = JSON.parse(docString);
-      response = await request.post(url).send(payload);
+      response = await request.post('/'+url).send(payload);
       expect(response.request.method).toBe(method);
     });
 
@@ -565,10 +526,7 @@ defineFeature(feature, (test) => {
   }) => {
     given(/^que há um item registrado no Cardápio com as informações:$/, async (table) => {
       const items = table.hashes();
-      const alreadyExists = await mockMenuRepository.findOne((el) => el.name === items[0].name);
-      if (!alreadyExists) {
-        await mockMenuRepository.createItem(items[0]);
-      }
+      await mockMenuRepository.createItem(items[0]);
       itemMenuDB = await mockMenuRepository.getItems();
       expect(itemMenuDB).toHaveLength(1);
       expect(itemMenuDB[0].name).toBe(items[0].name);
@@ -582,7 +540,7 @@ defineFeature(feature, (test) => {
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*) com as informações:$/, async (method, url, docString) => {
       const payload = JSON.parse(docString);
-      response = await request.put(url).send(payload);
+      response = await request.put('/'+url).send(payload);
       expect(response.request.method).toBe(method);
     });
 
