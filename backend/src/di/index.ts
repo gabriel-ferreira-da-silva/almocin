@@ -4,6 +4,7 @@ import OrderRepository from '../repositories/order.repository';
 import CategoryService from '../services/category.service';
 import MenuService from '../services/menu.service';
 import OrderService from '../services/order.service';
+import StatsService from '../services/stats.service';
 import Injector from './injector';
 
 export const di = new Injector();
@@ -36,4 +37,9 @@ di.registerService(
     di.getRepository(OrderRepository),
     di.getRepository(MenuRepository),
   )
+);
+
+di.registerService(
+  StatsService,
+  new StatsService()
 );
