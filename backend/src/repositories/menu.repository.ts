@@ -21,8 +21,8 @@ class MenuRepository extends BaseRepository<ItemMenuEntity> {
   public async updateItem(
     id: string,
     data: ItemMenuEntity
-  ): Promise<ItemMenuEntity | null> {
-    return await this.update((item) => item.id === id, data);
+  ): Promise<ItemMenuEntity> {
+    return await this.update((item) => item.id === id, data) as ItemMenuEntity;
   }
 
   public async deleteItem(id: string): Promise<void> {

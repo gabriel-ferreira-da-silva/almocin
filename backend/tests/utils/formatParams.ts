@@ -7,3 +7,16 @@ export function formatNumberParam(param: string) {
   if (isNaN(number)) return null
   return number;
 }
+
+export function formatPrice(param: number) {
+  return parseFloat(Number(param).toFixed(2))
+}
+
+export function formatRouteWithId(route: string, id: string) {
+  return route.replace(':id', id.toString());
+}
+
+export function formatUrl(url: string, id?: string) {
+  const newUrl = `/api/${formatParam(url)}`
+  return id ? formatRouteWithId(newUrl, id) : newUrl;
+}

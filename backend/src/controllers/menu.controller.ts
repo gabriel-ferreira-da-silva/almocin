@@ -69,16 +69,16 @@ class MenuController {
     );
 
     return new SuccessResult({
-      msg: Result.transformRequestOnMsg(req),
+      msg: `Item ${item.name} atualizado no cardápio`,
       data: item,
     }).handle(res);
   }
 
   private async deleteItem(req: Request, res: Response) {
-    await this.menuService.deleteItem(req.params.id);
+    const itemName = await this.menuService.deleteItem(req.params.id);
 
     return new SuccessResult({
-      msg: Result.transformRequestOnMsg(req),
+      msg: `Item ${itemName} removido do cardápio`,
     }).handle(res);
   }
 }
