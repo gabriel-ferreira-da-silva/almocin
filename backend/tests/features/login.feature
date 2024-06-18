@@ -1,35 +1,92 @@
-Feature: Tentativa indevida de acesso via URL sem estar logado
+Feature: Login
 
-  Scenario: Tentativa de acesso via URL sem estar logado
-    Given Estou na aba de pesquisa tentando acessar a minha conta do sistema via URL
-    And Não estou logado no sistema
-    When Digito a URL "AlmoCin\cliente\Fernando" na barra de navegação
-    Then Sou redirecionado automaticamente para a página de login
-    And Vejo uma mensagem informando que devo fazer login para acessar a página desejada
+As um usuário
+I Want fazer login, logout e recuperar a senha
+So that eu possa acessar e gerenciar o sistema de forma segura
 
-Feature: Logout
+Background: Usuário tenta fazer login no sistema
+Given o usuário fez login com email "admin@example.com" e senha "admin"
 
-Scenario: Logout do Sistema
-  Given Existe um cliente com login "Joao65@gmail.com" e sessão ativa
-  When O sistema recebe uma requisição de "POST" para "user/logout"
-  Then O sistema limpa quaisquer tokens de autenticação ou cookies associados à sessão do usuário
-  And O sistema retorna uma resposta 200 OK confirmando que o logout foi bem-sucedido.
+Scenario: Login com sucesso
+When o usuário faz uma requisição "POST" para "/login" com os seguintes dados:
+"""
+{
+  "email": "admin@example.com",
+  "password": "admin"
+}
+"""
+Then a resposta deve ser "200"
+And o corpo da resposta deve ser:
+"""
+{
+  "msg": "Login successful",
+  "data": {
+    "token": "session_token_value"
+  }
+}
+"""
+And um cookie "session_token" deve ser criado com o valor "session_token_value"
 
-Feature: Wrong login 
+Scenario: Falha no login devido a senha incorreta
+When o usuário faz uma requisição "POST" para "/login" com os seguintes dados:
+"""
+{
+  "email": "admin@example.com",
+  "password": "wrongPassword"
+}
+"""
+Then a resposta deve ser "401"
+And o corpo da resposta deve ser:
+"""
+{
+  "msg": "Email ou senha inválidos"
+}
+"""
+And o cookie "session_token" não deve ser criado
 
-Scenario: Login mal-sucedido devido a senha incorreta
-  Given estou na página de login/cadastro e a senha correta é "asenha123"
-  When preencho o campo de nome com "talpessoa"
-  And preencho o campo de senha com "senhaerrada123"
-  And clico no botão de login
-  Then vejo uma mensagem de erro indicando que a senha está incorreta
-  And permaneço na página de login/cadastro
+Scenario: Logout com sucesso
+Given o usuário está autenticado
+When o usuário faz uma requisição "POST" para "/login/logout"
+Then a resposta deve ser "200"
+And o corpo da resposta deve ser:
+"""
+{
+  "msg": "Logout successful"
+}
+"""
+And o cookie "session_token" deve ser removido
 
-Scenario: Login mal-sucedido devido a formato de email incorreto
-  Given estou na página de login
-  When preencho o campo de nome com "usuario@incorreto"
-  And preencho o campo de senha com "asenha123"
-  And entro no modo login
-  Then vejo uma mensagem de erro indicando que o formato do email está incorreto
-  And permaneço na página de login
+Scenario: Recuperação de senha com sucesso
+When o usuário faz uma requisição "POST" para "/login/forgot-password" com os seguintes dados:
+"""
+{
+  "email": "admin@example.com",
+  "recoveryQuestion": "adminAnswer",
+  "newPassword": "newAdminPassword"
+}
+"""
+Then a resposta deve ser "200"
+And o corpo da resposta deve ser:
+"""
+{
+  "msg": "Password reset successful"
+}
+"""
+And o usuário deve poder fazer login com "admin@example.com" e "newAdminPassword"
 
+Scenario: Falha na recuperação de senha devido a email não registrado
+When o usuário faz uma requisição "POST" para "/login/forgot-password" com os seguintes dados:
+"""
+{
+  "email": "unknown@example.com",
+  "recoveryQuestion": "lulu",
+  "newPassword": "newPassword"
+}
+"""
+Then a resposta deve ser "404"
+And o corpo da resposta deve ser:
+"""
+{
+  "msg": "Email não registrado"
+}
+"""
