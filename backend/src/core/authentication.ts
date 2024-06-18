@@ -1,12 +1,19 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { generateToken } from '../utils/auth/generateToken';
 
 interface CustomRequest extends Request {
   user?: any; // Você pode definir um tipo mais específico se souber a estrutura do payload do token
 }
 
 const authMiddleware = (req: CustomRequest, res: Response, next: NextFunction) => {
-  const token = process.env.ENV == 'TEST' ? 'defaultSecret' : req.headers.authorization?.split(' ')[1];
+  let token;
+  if (process.env.ENV == 'TEST') {
+    console.log('Running in test environment')
+    token = generateToken('123');
+  } else {
+    token = req.headers.authorization?.split(' ')[1];
+  }
 
   if (!token) {
     return res.status(401).json({ msg: 'Access denied. No token provided.' });
