@@ -10,6 +10,10 @@ class OrderRepository extends BaseRepository<OrderEntity> {
     return await this.findAll();
   }
 
+  public async getOrdersByUserId(userId:string): Promise<OrderEntity[]> {
+    return await this.findAll(((order)=> order.userID === userId));
+  }
+
   public async getOrder(id: string): Promise<OrderEntity | null> {
     return await this.findOne((item) => item.id === id);
   }
