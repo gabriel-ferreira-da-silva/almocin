@@ -4,9 +4,11 @@ import app from '../../src/app';
 import { di } from '../../src/di';
 import MenuRepository from '../../src/repositories/menu.repository';
 import ItemMenuEntity from '../../src/entities/item-menu.entity';
+import formatParam, { formatNumberParam } from '../utils/formatParams';
 
 const feature = loadFeature('tests/features/menu.feature');
 const request = supertest(app);
+const urlPrefix = '/api';
 
 defineFeature(feature, (test) => {
   let mockMenuRepository: MenuRepository;
@@ -31,33 +33,29 @@ defineFeature(feature, (test) => {
     });
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*) com as informações:$/, async (method: string, url, docString) => {
+      const route = `${urlPrefix}/${formatParam(url)}`;
       const payload = JSON.parse(docString);
-      response = await request.post('/'+url.slice(1, url.length-1)).send(payload);
-      expect(response.request.method).toBe(method.slice(1, method.length-1));
+      response = await request.post(route).send(payload);
+      expect(response.request.method).toBe(formatParam(method));
     });
 
     then(/^o status code da resposta é (.*)$/, (statusCode) => {
-      expect(response.status).toBe(
-        Number(statusCode.slice(1, statusCode.length-1))
-      );
+      expect(response.status).toBe(formatNumberParam(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body.msg).toEqual(expectedResponse.message);
     });
 
     and(/^a lista de itens no Cardápio é:$/, async (table) => {
-      const items = table.hashes();
-      const menuItems = await mockMenuRepository.getItems();
-      expect(menuItems.length).toBeGreaterThan(itemMenuDB.length)
-      expect(menuItems.length).toEqual(items.length);
-      items.forEach((item: ItemMenuEntity, index: number) => {
-        expect(menuItems[index].name).toBe(item.name);
-        expect(menuItems[index].price).toBe(Number(item.price));
-        expect(menuItems[index].categoryID).toBe(item.categoryID);
-        expect(menuItems[index].description).toBe(item.description);
-        expect(menuItems[index].timeToPrepare).toBe(item.timeToPrepare);
+      expect(itemMenuDB.length).toEqual(table.length);
+      table.forEach((item: ItemMenuEntity, index: number) => {
+        expect(itemMenuDB[index].name).toBe(item.name);
+        expect(itemMenuDB[index].price).toBe(Number(item.price));
+        expect(itemMenuDB[index].categoryID).toEqual(formatNumberParam(item.categoryID));
+        expect(itemMenuDB[index].description).toBe(item.description);
+        expect(itemMenuDB[index].timeToPrepare).toBe(item.timeToPrepare);
       });
     });
   });
@@ -94,9 +92,9 @@ defineFeature(feature, (test) => {
       expect(response.status).toBe(Number(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body).toEqual(expectedResponse);
     });
 
     and(/^a lista de itens no Cardápio é:$/, async (table) => {
@@ -144,9 +142,9 @@ defineFeature(feature, (test) => {
       expect(response.status).toBe(Number(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body).toEqual(expectedResponse);
     });
 
     and(/^a lista de itens no Cardápio é:$/, async (table) => {
@@ -183,9 +181,9 @@ defineFeature(feature, (test) => {
       expect(response.status).toBe(Number(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body).toEqual(expectedResponse);
     });
 
     and(/^a lista de itens no Cardápio é:$/, async (table) => {
@@ -221,9 +219,9 @@ defineFeature(feature, (test) => {
       expect(response.status).toBe(Number(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body).toEqual(expectedResponse);
     });
 
     and(/^a lista de itens no Cardápio é:$/, async (table) => {
@@ -261,9 +259,9 @@ defineFeature(feature, (test) => {
       expect(response.status).toBe(Number(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body).toEqual(expectedResponse);
     });
 
     and(/^a lista de itens no Cardápio é:$/, async (table) => {
@@ -301,9 +299,9 @@ defineFeature(feature, (test) => {
       expect(response.status).toBe(Number(statusCode));
     });
       
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body).toEqual(expectedResponse);
     });
 
     and(/^a lista de itens no Cardápio é:$/, async (table) => {
@@ -339,9 +337,9 @@ defineFeature(feature, (test) => {
       expect(response.status).toBe(Number(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body).toEqual(expectedResponse);
     });
 
     and(/^a lista de itens no Cardápio é:$/, async (table) => {
@@ -376,9 +374,9 @@ defineFeature(feature, (test) => {
       expect(response.status).toBe(Number(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body).toEqual(expectedResponse);
     });
 
     and(/^a lista de itens no Cardápio é:$/, async (table) => {
@@ -415,9 +413,9 @@ defineFeature(feature, (test) => {
       expect(response.status).toBe(Number(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body).toEqual(expectedResponse);
     });
 
     and(/^a lista de itens no Cardápio é:$/, async (table) => {
@@ -468,9 +466,9 @@ defineFeature(feature, (test) => {
       expect(response.status).toBe(Number(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body).toEqual(expectedResponse);
     });
 
     and(/^a lista de itens no Cardápio é:$/, async (table) => {
@@ -506,9 +504,9 @@ defineFeature(feature, (test) => {
       expect(response.status).toBe(Number(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body).toEqual(expectedResponse);
     });
 
     and(/^a lista de itens no Cardápio é:$/, async (table) => {
@@ -554,9 +552,9 @@ defineFeature(feature, (test) => {
       expect(response.status).toBe(Number(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body).toEqual(expectedResponse);
     });
 
     and(/^a lista de itens no Cardápio é:$/, async (table) => {

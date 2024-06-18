@@ -9,7 +9,6 @@ interface CustomRequest extends Request {
 const authMiddleware = (req: CustomRequest, res: Response, next: NextFunction) => {
   let token;
   if (process.env.ENV == 'TEST') {
-    console.log('Running in test environment')
     token = generateToken('123');
   } else {
     token = req.headers.authorization?.split(' ')[1];

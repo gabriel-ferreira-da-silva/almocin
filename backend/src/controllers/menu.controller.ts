@@ -56,8 +56,9 @@ class MenuController {
     const item = await this.menuService.createItem(new ItemMenuEntity(req.body));
 
     return new SuccessResult({
-      msg: Result.transformRequestOnMsg(req),
+      msg: `Item ${item.name} adicionado ao cardápio`,
       data: item,
+      code: 201,
     }).handle(res);
   }
 
