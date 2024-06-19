@@ -25,7 +25,7 @@ Then a resposta deve ser "201"
 And o corpo da resposta deve ser:
 """
 {
-  "msg": "Usuário criado com sucesso",
+  "msg": "User created successfully",
   "data": {
     "id": "id_do_usuario",
     "name": "João",
@@ -57,10 +57,9 @@ Then a resposta deve ser "400"
 And o corpo da resposta deve ser:
 """
 {
-  "msg": "Campos obrigatórios não preenchidos ou inválidos"
+  "msg": "All fields are required"
 }
 """
-
 Scenario: Falha no registro devido a email já registrado
 Given um usuário com email "joao@example.com" já está registrado
 When o usuário faz uma requisição "POST" para "/register" com o seguinte dado:
@@ -76,10 +75,10 @@ When o usuário faz uma requisição "POST" para "/register" com o seguinte dado
   "recoveryQuestion": "lulu"
 }
 """
-Then a resposta deve ser "409"
+Then a resposta deve ser "400"
 And o corpo da resposta deve ser:
 """
 {
-  "msg": "Email já registrado"
+  "msg": "User with this email already exists"
 }
 """
