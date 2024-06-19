@@ -29,12 +29,12 @@ class UserService {
   public async createUser(data: UserEntity): Promise<UserModel> {
     const existingUserByEmail = await this.userRepository.findOneByEmail(data.email);
     if (existingUserByEmail) {
-      throw new HttpNotFoundError({ msg: 'User with this email already exists' });
+      throw new HttpBadRequestError({ msg: 'User with this email already exists' });
     }
   
     const existingUserByCpf = await this.userRepository.findOneByCpf(data.cpf);
     if (existingUserByCpf) {
-      throw new HttpNotFoundError({ msg: 'User with this CPF already exists' });
+      throw new HttpBadRequestError({ msg: 'User with this CPF already exists' });
     }
   
     const entity = await this.userRepository.createUser(data);
@@ -53,14 +53,14 @@ class UserService {
     if (data.email) {
       const existingUserByEmail = await this.userRepository.findOneByEmail(data.email);
       if (existingUserByEmail && existingUserByEmail.id !== id) {
-        throw new HttpNotFoundError({ msg: 'User with this email already exists' });
+        throw new HttpBadRequestError({ msg: 'User with this email already exists' });
       }
     }
   
     if (data.cpf) {
       const existingUserByCpf = await this.userRepository.findOneByCpf(data.cpf);
       if (existingUserByCpf && existingUserByCpf.id !== id) {
-        throw new HttpNotFoundError({ msg: 'User with this CPF already exists' });
+        throw new HttpBadRequestError({ msg: 'User with this CPF already exists' });
       }
     }
   
