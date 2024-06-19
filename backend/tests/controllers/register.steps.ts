@@ -45,9 +45,20 @@ defineFeature(feature, (test) => {
   });
 
   test('Falha no registro devido a campos inválidos', ({ given, when, then, and }) => {
-    given(/^o usuário deseja se registrar com nome "(.*)", email "(.*)", gênero "(.*)", método de pagamento "(.*)", CPF "(.*)", CEP "(.*)", senha "(.*)", e resposta à pergunta de recuperação "(.*)"$/, (name, email, gender, paymentMethod, cpf, cep, password, recoveryQuestion) => {
-      console.log(name, email, gender, paymentMethod, cpf, cep, password, recoveryQuestion);
-      // No setup needed for invalid field registration test
+    given(/^o usuário deseja se registrar com nome "(.*)", email "(.*)", gênero "(.*)", método de pagamento "(.*)", CPF "(.*)", CEP "(.*)", senha "(.*)", e resposta à pergunta de recuperação "(.*)"$/, (name, email, gender, paymentMethod, cpf, cep, password, recoveryQuestion) => { 
+      const requestData = {
+        name,
+        email,
+        gender,
+        paymentMethod,
+        cpf, 
+        cep,
+        password,
+        recoveryQuestion
+      };
+      const userEntity = new UserEntity(requestData);
+      expect(userEntity).toBeInstanceOf(UserEntity)
+      expect(userEntity).toBeDefined();
     });
 
     when('o usuário faz uma requisição "POST" para "/register" com os seguintes dados:', async (docString) => {
