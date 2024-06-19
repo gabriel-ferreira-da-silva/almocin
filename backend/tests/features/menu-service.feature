@@ -1,189 +1,198 @@
 Feature: Serviços de Cardápio
 
-Background:
-  Given no serviço "MenuService" têm os métodos "getItem", "getItems", "createItem", "deleteItem", "updateItem"
-  And no repository "MenuRepository" há os itens:
-    | id | name | price | description | categoryID | image | timeToPrepare |
-    | 0  | "Coca-Cola" | 5.00 | "Geladinha" | "1" | "coca-cola.jpg" | 5 |
-    | 1  | "Hamburguer" | 15.00 | "feito de carne" | "5" | "ham.jpg" | 10 |
-    | 2  | "Batata Frita" | 10.00 | "Sem Oléo" | "4" | "bt.jpg" | 5 |
-    | 3  | "Sorvete" | 7.00 | "Chocolate" | "5" | "ice-cream.jpg" | 5 |
-    | 4  | "Cerveja" | 8.00 | "Cerveja gelada" | "1" | "cerveja.jpg" | 5 |
-  And Existe um objeto "ItemMenu" com os atributos: "name", "price", "description", "category", "image", "timeToPrepare"
-
 Scenario: Listar todos os itens
-  Given o método "getItems" não há parâmetros
-  And o método "getItems" retorna todos os itens de "MenuRepository" formatado, os quais são:
-    | id | name | price | description | categoryID | image | timeToPrepare |
-    | 0  | "Coca-Cola" | 5.00 | "Gelada" | "Bebidas" | "coca=cola.jpg" | 5 |
-    | 1  | "Hamburguer" | 15.00 | "feito de carne" | "Sobremesas" | "ham.jpg" | 10 |
-    | 2  | "Batata Frita" | 10.00 | "Sem Oléo" | "Aperitivos" | "bt.jpg" | 5 |
-    | 3  | "Sorvete" | 7.00 | "Chocolate" | "Sobremesas" | "ice-cream.jpg" | 5 |
-    | 4  | "Cerveja" | 8.00 | "Cerveja gelada" | "Bebidas" | "cerveja.jpg" | 5 |
-  When eu chamo o método "getItems"
-  Then o método "getItems" retorna os itens:
-    | id | name | price | description | category | image | timeToPrepare |
-    | 0  | "Coca-Cola" | 5.00 | "Gelada" | "Bebidas" | "coca=cola.jpg" | 5 |
-    | 1  | "Hamburguer" | 15.00 | "feito de carne" | "Sobremesas" | "ham.jpg" | 10 |
-    | 2  | "Batata Frita" | 10.00 | "Sem Oléo" | "Aperitivos" | "bt.jpg" | 5 |
-    | 3  | "Sorvete" | 7.00 | "Chocolate" | "Sobremesas" | "ice-cream.jpg" | 5 |
-    | 4  | "Cerveja" | 8.00 | "Cerveja gelada" | "Bebidas" | "cerveja.jpg" | 5 |
+  Given o método getItems não há parâmetros e retorna todos os itens de MenuRepository formatado, os quais são:
+    | name | price | description | categoryID | image | timeToPrepare |
+    | "Coca-Cola" | 5.00 | "Gelada" | "1" | "coca-cola.jpg" | 5 |
+    | "Hamburguer" | 15.00 | "feito de carne" | "2" | "ham.jpg" | 10 |
+    | "Batata Frita" | 10.00 | "Sem Oléo" | "3" | "bt.jpg" | 5 |
+    | "Sorvete" | 7.00 | "Chocolate" | "2" | "ice-cream.jpg" | 5 |
+    | "Cerveja" | 8.00 | "Cerveja gelada" | "1" | "cerveja.jpg" | 5 |
+  And no repository CategoryRepository há as categorias:
+    | id | name |
+    | "1" | "Bebidas" |
+    | "2" | "Sobremesas" |
+    | "3" | "Aperitivos" |
+    | "4" | "Pratos" |
+    | "5" | "Lanches" |
+  When eu chamo o método getItems
+  Then o método getItems retorna os itens:
+    | name | price | description | category | image | timeToPrepare |
+    | "Coca-Cola" | 5.00 | "Gelada" | "Bebidas" | "coca-cola.jpg" | 5 |
+    | "Hamburguer" | 15.00 | "feito de carne" | "Sobremesas" | "ham.jpg" | 10 |
+    | "Batata Frita" | 10.00 | "Sem Oléo" | "Aperitivos" | "bt.jpg" | 5 |
+    | "Sorvete" | 7.00 | "Chocolate" | "Sobremesas" | "ice-cream.jpg" | 5 |
+    | "Cerveja" | 8.00 | "Cerveja gelada" | "Bebidas" | "cerveja.jpg" | 5 |
 
 Scenario: Listar um item do cardápio
-  Given o método "getItem" têm como parâmetros: "id"
-  And o método "getItem" retorna um item formatado baseado no "id" espeficicado
-  And para o "id" "1" o método "getItem" retorna o item:
+  Given o método getItem retorna um item formatado baseado no id especificado e os itens de MenuRepository são:
     | id | name | price | description | categoryID | image | timeToPrepare |
-    | 1  | "Hamburguer" | 15.00 | "feito de carne" | "Sobremesas" | "ham.jpg" | 10 |
-  When eu chamo o método "getItem" com os parâmetros "id: '1'"
-  Then o método "getItem" retorna o item:
-    | id | name | price | description | categoryID | image | timeToPrepare |
-    | 1  | "Hamburguer" | 15.00 | "feito de carne" | "Sobremesas" | "ham.jpg" | 10 |
+    | "1" | "Coca-Cola" | 5.00 | "Gelada" | "1" | "coca-cola.jpg" | 5 |
+    | "2" | "Hamburguer" | 15.00 | "feito de carne" | "2" | "ham.jpg" | 10 |
+    | "3" | "Batata Frita" | 10.00 | "Sem Oléo" | "3" | "bt.jpg" | 5 |
+    | "4" | "Sorvete" | 7.00 | "Chocolate" | "2" | "ice-cream.jpg" | 5 |
+    | "5" | "Cerveja" | 8.00 | "Cerveja gelada" | "1" | "cerveja.jpg" | 5 |
+  And no repository CategoryRepository há as categorias:
+    | id | name |
+    | "1" | "Bebidas" |
+    | "2" | "Sobremesas" |
+    | "3" | "Aperitivos" |
+    | "4" | "Pratos" |
+    | "5" | "Lanches" |
+  When eu chamo o método getItem com os parâmetros "2"
+  Then o método getItem retorna o item:
+    | name | price | description | category | image | timeToPrepare |
+    | "Hamburguer" | 15.00 | "feito de carne" | "Sobremesas" | "ham.jpg" | 10 |
 
 Scenario: Criar um item no cardápio
-  Given o método "createItem" têm como parâmetros "data: ItemMenu"
-  And o método "createItem" retorna o item criado
-  And para os parâmetros:
-  """
-    data: {
-      name: 'Pizza',
-      price: 20.00,
-      description: 'Feita de queijo',
-      category: "5",
-      image: 'pizza.jpg',
-      timeToPrepare: 15
+  Given o método createItem retorna o item criado
+  And no repository CategoryRepository há as categorias:
+    | id | name |
+    | 1 | Bebidas |
+    | 2 | Sobremesas |
+    | 3 | Aperitivos |
+    | 4 | Pratos |
+    | 5 | Lanches |
+  When eu chamo o método createItem com os parâmetros:
+    """
+    {
+      "name": "Pizza",
+      "price": 20.00,
+      "description": "Feita de queijo",
+      "categoryID": "2",
+      "image": "pizza.jpg",
+      "timeToPrepare": 15
     }
-  """
-  o método "createItem" retorna o item:
-    | id | name | price | description | categoryID | image | timeToPrepare |
-    | 5  | "Pizza" | 20.00 | "Feita de queijo" | "Sobremesas" | "pizza.jpg" | 15 |
-  When eu chamo o método "createItem" com os parâmetros:
-  """
-    data: {
-      name: 'Pizza',
-      price: 20.00,
-      description: 'Feita de queijo',
-      category: "5",
-      image: 'pizza.jpg',
-      timeToPrepare: 15
-    }
-  """
-  Then o método "createItem" retorna o item formatado:
-    | id | name | price | description | categoryID | image | timeToPrepare |
-    | 5  | "Pizza" | 20.00 | "Feita de queijo" | "Sobremesas" | "pizza.jpg" | 15 |
+    """
+  Then o método createItem retorna o item formatado:
+    | name | price | description | category | image | timeToPrepare |
+    | Pizza | 20 | Feita de queijo | Sobremesas | pizza.jpg | 15 |
   
 Scenario: Modificar um item do cardápio
-  Given o método "updateItem" têm como parâmetros "id" e "data: ItemMenu"
-  And o método "updateItem" retorna o item baseado no "id" e "data" especificado
-  And para os parâmetros:
-  """
-    id: 1
-    data: {
-      name: 'Hamburguer',
-      price: 20.00,
-      description: 'feito de carne',
-      category: "5",
-      image: 'ham.jpg',
-      timeToPrepare: 10
-    }
-  """
-  o método "updateItem" retorna o item formatado:
+  Given o método updateItem retorna o item baseado no id e data especificado e os itens de MenuRepository são:
     | id | name | price | description | categoryID | image | timeToPrepare |
-    | 1  | "Hamburguer" | 20.00 | "feito de carne" | "Sobremesas" | "ham.jpg" | 10 |
-  When eu chamo o método "updateItem" com os parâmetros:
+    | 1 | "Coca-Cola" | 5.00 | "Gelada" | "1" | "coca-cola.jpg" | 5 |
+    | 2 | "Hamburguer" | 15.00 | "feito de carne" | "2" | "ham.jpg" | 10 |
+    | 3 | "Batata Frita" | 10.00 | "Sem Oléo" | "3" | "bt.jpg" | 5 |
+    | 4 | "Sorvete" | 7.00 | "Chocolate" | "2" | "ice-cream.jpg" | 5 |
+    | 5 | "Cerveja" | 8.00 | "Cerveja gelada" | "1" | "cerveja.jpg" | 5 |
+  And no repository CategoryRepository há as categorias:
+    | id | name |
+    | 1 | Bebidas |
+    | 2 | Sobremesas |
+    | 3 | Aperitivos |
+    | 4 | Pratos |
+    | 5 | Lanches |
+  When eu chamo o método updateItem com os parâmetros:
   """
-    id: 1
-    data: {
-      name: 'Hamburguer',
-      price: 20.00,
-      description: 'feito de carne',
-      category: "5",
-      image: 'ham.jpg',
-      timeToPrepare: 10
+  {
+    "id": 2,
+    "data": {
+      "name": "Pizza",
+      "price": 20.00,
+      "description": "Feita de queijo",
+      "categoryID": "5",
+      "image": "pizza.jpg",
+      "timeToPrepare": 15
     }
+  }
   """
-  Then o método "updateItem" retorna o item formatado:
-    | id | name | price | description | categoryID | image | timeToPrepare |
-    | 1  | "Hamburguer" | 20.00 | "feito de carne" | "Sobremesas" | "ham.jpg" | 10 |
+  Then o método updateItem retorna o item formatado:
+    | name | price | description | category | image | timeToPrepare |
+    | Pizza | 20 | Feita de queijo | Lanches | pizza.jpg | 15 |
 
 Scenario: Apagar um item do cardápio
-  Given o método "deleteItem" têm como parâmetros "id"
-  And o método "deleteItem" retorna nada
-  When eu chamo o método "deleteItem" com os parâmetros "id: '1'"
-  Then o item é apagado do "MenuRepository"
-  And o método "deleteItem" retorna nada
+  Given o método deleteItem retorna o nome do item apagado e os itens de MenuRepository são:
+    | id | name | price | description | categoryID | image | timeToPrepare |
+    | 1 | "Coca-Cola" | 5.00 | "Gelada" | "1" | "coca-cola.jpg" | 5 |
+    | 2 | "Hamburguer" | 15.00 | "feito de carne" | "2" | "ham.jpg" | 10 |
+    | 3 | "Batata Frita" | 10.00 | "Sem Oléo" | "3" | "bt.jpg" | 5 |
+    | 4 | "Sorvete" | 7.00 | "Chocolate" | "2" | "ice-cream.jpg" | 5 |
+    | 5 | "Cerveja" | 8.00 | "Cerveja gelada" | "1" | "cerveja.jpg" | 5 |
+  When eu chamo o método deleteItem com os parâmetros "2"
+  Then o item é apagado do MenuRepository e os itens de MenuRepository são:
+    | id | name | price | description | categoryID | image | timeToPrepare |
+    | 1 | "Coca-Cola" | 5.00 | "Gelada" | "1" | "coca-cola.jpg" | 5 |
+    | 3 | "Batata Frita" | 10.00 | "Sem Oléo" | "3" | "bt.jpg" | 5 |
+    | 4 | "Sorvete" | 7.00 | "Chocolate" | "2" | "ice-cream.jpg" | 5 |
+    | 5 | "Cerveja" | 8.00 | "Cerveja gelada" | "1" | "cerveja.jpg" | 5 |
+  And o método deleteItem retorna "Hamburguer"
 
 Scenario: Tentar apagar um item que não existe
-  Given o método "deleteItem" têm como parâmetros "id"
-  And o método "deleteItem" retorna nada
-  When eu chamo o método "deleteItem" com os parâmetros "id: '10'"
-  Then nenhum "ItemMenu" é apagado do "MenuRepository"
-  And o método "deleteItem" retorna nada
+  Given o método deleteItem têm como parâmetros ":id"
+  And o método deleteItem retorna nada
+  When eu chamo o método deleteItem com os parâmetros ":id"
+  Then nenhum item é apagado do MenuRepository
+  And o método deleteItem retorna nada
 
 Scenario: Tentar criar um item sem nome
-  Given o método "createItem" têm como parâmetros "data: ItemMenu"
-  And o método "createItem" retorna o item criado
-  And para utilizar o método "createItem" é necessário passar os parâmetros:
+  Given o método createItem têm como parâmetros "data: ItemMenu"
+  And o método createItem retorna o item criado
+  And para utilizar o método createItem é necessário passar os parâmetros:
     | name | price | description | category | image | timeToPrepare |
-  When eu chamo o método "createItem" com os parâmetros:
+  When eu chamo o método createItem com os parâmetros:
   """
-    data: {
-      name: '',
-      price: 20.00,
-      description: 'Feita de queijo',
-      category: "5",
-      image: 'pizza.jpg',
-      timeToPrepare: 15
-    }
+  {
+    name: '',
+    price: 20.00,
+    description: 'feito de carne',
+    categoryID: '5',
+    image: 'ham.jpg',
+    timeToPrepare: 10
+  }
   """
-  Then o método "createItem" retorna a mensagem "O nome é requerido"
+  Then o método createItem retorna a mensagem "O nome é requerido"
 
 Scenario: Tentar criar um item sem preço
-  Given o método "createItem" têm como parâmetros "data: ItemMenu"
-  And o método "createItem" retorna o item criado
-  And para utilizar o método "createItem" é necessário passar os parâmetros:
+  Given o método createItem têm como parâmetros "data: ItemMenu"
+  And o método createItem retorna o item criado
+  And para utilizar o método createItem é necessário passar os parâmetros:
     | name | price | description | category | image | timeToPrepare |
-  When eu chamo o método "createItem" com os parâmetros:
+  When eu chamo o método createItem com os parâmetros:
   """
-    data: {
-      name: 'Pizza',
-      price: '',
-      description: 'Feita de queijo',
-      category: "5",
-      image: 'pizza.jpg',
-      timeToPrepare: 15
+  {
+    "data": {
+      name: 'Hambuguer',
+      price: null,
+      description: 'feito de carne',
+      categoryID: '5',
+      image: 'ham.jpg',
+      timeToPrepare: 10
     }
+  }
   """
-  Then o método "createItem" retorna a mensagem "O preço é requerido"
+  Then o método createItem retorna a mensagem "O preço é requerido"
 
 Scenario: Tentar atualizar item com id inexistente
-  Given o método "updateItem" têm como parâmetros "id" e "data: ItemMenu"
-  And o método "updateItem" retorna o item baseado no "id" e "data" especificado
-  When eu chamo o método "updateItem" com os parâmetros:
+  Given o método updateItem têm como parâmetros ":id" e "data: ItemMenu"
+  And o método updateItem retorna o item baseado no ":id" e "data" especificado
+  When eu chamo o método updateItem com os parâmetros:
   """
     id: 10
     data: {
       name: 'Hamburguer',
       price: 20.00,
       description: 'feito de carne',
-      category: "5",
+      categoryID: '5',
       image: 'ham.jpg',
       timeToPrepare: 10
     }
   """
-  Then o método "updateItem" retorna a mensagem "Item não encontrado no Cardápio"
+  Then o método updateItem retorna a mensagem "Item não encontrado no Cardápio"
 
 Scenario: Tentar adicionar item existente
-  Given o método "createItem" têm como parâmetros "data: ItemMenu"
-  When eu chamo o método "createItem" com os parâmetros:
+  Given o método createItem têm como parâmetros "data: ItemMenu"
+  When eu chamo o método createItem com os parâmetros:
   """
+  {
+  }
     data: {
       name: 'Coca-Cola',
       price: 5.00,
       description: 'Geladinha',
-      category: "1",
+      categoryID: '1',
       image: 'coca-cola.jpg',
       timeToPrepare: 5
     }
   """
-  Then o método "createItem" retorna a mensagem "Item Coca-Cola já existe no Cardápio"
+  Then o método createItem retorna a mensagem "Item Coca-Cola já existe no Cardápio"
