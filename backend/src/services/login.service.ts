@@ -48,7 +48,9 @@ class LoginService {
       throw new HttpBadRequestError({ msg: 'Invalid recovery question' });
     }
 
-    user.password = newPassword;
+    const hashedPassword = bcrypt.hashSync(newPassword, 10);
+
+    user.password = hashedPassword;
     await this.userRepository.updateUser(user.id, user);
   }
 }
