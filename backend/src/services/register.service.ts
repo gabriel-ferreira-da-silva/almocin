@@ -2,6 +2,7 @@ import UserEntity from '../entities/user.entity';
 import UserModel from '../models/user.model';
 import UserRepository from '../repositories/user.repository';
 import { HttpNotFoundError, HttpBadRequestError } from '../utils/errors/http.error';
+import { ValidationMessages } from '../utils/validation/validationMessages';
 
 class UserService {
   private userRepository: UserRepository;
@@ -28,13 +29,14 @@ class UserService {
 
   public async createUser(data: UserEntity): Promise<UserModel> {
     const existingUserByEmail = await this.userRepository.findOneByEmail(data.email);
+    // Aqui no service ele passa nessa verificação:
     if (existingUserByEmail) {
-      throw new HttpBadRequestError({ msg: 'User with this email already exists' });
+      throw new HttpBadRequestError({ msg: 'User with this email already exists', msgCode: ValidationMessages.EMAIL_ALREADY_EXISTS });
     }
   
     const existingUserByCpf = await this.userRepository.findOneByCpf(data.cpf);
     if (existingUserByCpf) {
-      throw new HttpBadRequestError({ msg: 'User with this CPF already exists' });
+      throw new HttpBadRequestError({ msg: 'User with this CPF already exists', msgCode: ValidationMessages.CPF_ALREADY_EXISTS });
     }
   
     const entity = await this.userRepository.createUser(data);

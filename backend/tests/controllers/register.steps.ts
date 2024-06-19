@@ -14,7 +14,7 @@ defineFeature(feature, (test) => {
 
   beforeEach(async () => {
     mockUserRepository = di.getRepository(UserRepository);
-    await mockUserRepository.delete(el => true);
+    await mockUserRepository.delete(() => true);
   });
 
   test('Registro com sucesso', ({ given, when, then, and }) => {
@@ -46,6 +46,7 @@ defineFeature(feature, (test) => {
 
   test('Falha no registro devido a campos inválidos', ({ given, when, then, and }) => {
     given(/^o usuário deseja se registrar com nome "(.*)", email "(.*)", gênero "(.*)", método de pagamento "(.*)", CPF "(.*)", CEP "(.*)", senha "(.*)", e resposta à pergunta de recuperação "(.*)"$/, (name, email, gender, paymentMethod, cpf, cep, password, recoveryQuestion) => {
+      console.log(name, email, gender, paymentMethod, cpf, cep, password, recoveryQuestion);
       // No setup needed for invalid field registration test
     });
 
