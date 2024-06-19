@@ -10,6 +10,11 @@ import RegisterController from '../controllers/register.controller'; // Adicione
 import RegisterService from '../services/register.service'; // Adicione isto
 import authMiddleware from '../core/authentication';
 
+import OrderService from '../services/order.service';
+import OrderController from '../controllers/order.controller';
+import StatsController from '../controllers/stats.controller';
+import StatsService from '../services/stats.service';
+
 const router = Router();
 const prefix = '/api';
 
@@ -39,6 +44,15 @@ export default (app: Express) => {
     new CategoryController(router, di.getService(CategoryService)).router
   );
 
+  app.use(
+    `${prefix}`,
+    new OrderController(router, di.getService(OrderService)).router
+  )
+  app.use(
+    `${prefix}`,
+    new StatsController(router, di.getService(StatsService)).router
+  )
+  
   app.use((_, res) => {
     res.status(404).send({ message: 'Rota não encontrada.' });
   });

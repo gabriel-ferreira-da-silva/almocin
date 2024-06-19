@@ -4,6 +4,7 @@ import app from '../../src/app';
 import { di } from '../../src/di';
 import MenuRepository from '../../src/repositories/menu.repository';
 import ItemMenuEntity from '../../src/entities/item-menu.entity';
+import formatParam, { formatNumberParam, formatPrice, formatUrl } from '../utils/formatParams';
 
 const feature = loadFeature('tests/features/menu.feature');
 const request = supertest(app);
@@ -12,10 +13,13 @@ defineFeature(feature, (test) => {
   let mockMenuRepository: MenuRepository;
   let response: supertest.Response;
   let itemMenuDB: ItemMenuEntity[];
+  let previousItem: ItemMenuEntity;
 
   beforeEach(async () => {
     mockMenuRepository = di.getRepository(MenuRepository);
-    await mockMenuRepository.delete(el => el.active);
+    // Delete all data:
+    await mockMenuRepository.delete(() => false);
+    itemMenuDB = await mockMenuRepository.getItems()
   });
 
   test('Adicionar um novo item ao cardápio', ({
@@ -24,41 +28,34 @@ defineFeature(feature, (test) => {
     then,
     and
   }) => {
-    given(/^que não há itens registrados no cardápio$/, async () => {
-      itemMenuDB = await mockMenuRepository.getItems();
-      if (itemMenuDB.length > 0) {
-        await mockMenuRepository.delete(el => el.active);
-        itemMenuDB = await mockMenuRepository.getItems();
-      }
-      expect(itemMenuDB).toHaveLength(0);
+    given(/^que não há itens registrados no Cardápio$/, async () => {
+      expect(itemMenuDB.length).toEqual(0);
     });
 
-    when(/^o usuário faz uma requisição (.*) para o endpoint (.*) com as informações:$/, async (method, url, docString) => {
+    when(/^o usuário faz uma requisição (.*) para o endpoint (.*) com as informações:$/, async (method: string, url, docString) => {
+      const route = formatUrl(url)
       const payload = JSON.parse(docString);
-      response = await request.post(url).send(payload);
-      expect(response.request.method).toBe(method);
+      response = await request.post(route).send(payload);
+      expect(response.request.method).toBe(formatParam(method));
     });
 
     then(/^o status code da resposta é (.*)$/, (statusCode) => {
-      expect(response.status).toBe(Number(statusCode));
+      expect(response.status).toBe(formatNumberParam(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body.msg).toEqual(expectedResponse.message);
     });
 
-    and(/^a lista de itens no cardápio é:$/, async (table) => {
-      const items = table.hashes();
-      const menuItems = await mockMenuRepository.getItems();
-      expect(menuItems.length).toBeGreaterThan(itemMenuDB.length)
-      expect(menuItems).toHaveLength(items.length);
-      items.forEach((item: ItemMenuEntity, index: number) => {
-        expect(menuItems[index].name).toBe(item.name);
-        expect(menuItems[index].price).toBe(Number(item.price));
-        expect(menuItems[index].categoryID).toBe(item.categoryID);
-        expect(menuItems[index].description).toBe(item.description);
-        expect(menuItems[index].timeToPrepare).toBe(item.timeToPrepare);
+    and(/^a lista de itens no Cardápio é:$/, async (table: ItemMenuEntity[]) => {
+      expect(itemMenuDB.length).toEqual(table.length);
+      table.forEach((item: ItemMenuEntity, index: number) => {
+        expect(itemMenuDB[index].name).toEqual(item.name);
+        expect(itemMenuDB[index].price).toEqual(formatPrice(item.price));
+        expect(itemMenuDB[index].categoryID).toEqual(formatNumberParam(item.categoryID));
+        expect(itemMenuDB[index].description).toEqual(item.description);
+        expect(itemMenuDB[index].timeToPrepare).toEqual(item.timeToPrepare);
       });
     });
   });
@@ -69,50 +66,46 @@ defineFeature(feature, (test) => {
     when,
     then
   }) => {
-    given(/^que há um item registrado em Cardápio com as informações:$/, async (table) => {
-      const items = table.hashes();
-      const alreadyExists = await mockMenuRepository.findOne((el) => el.name === items[0].name);
-      if (!alreadyExists) {
-        await mockMenuRepository.createItem(items[0]);
-      }
-      itemMenuDB = await mockMenuRepository.getItems();
+    given(/^que há um item registrado no Cardápio com as informações:$/, async (table: ItemMenuEntity[]) => {
+      await mockMenuRepository.createItem(table[0]);
+
       expect(itemMenuDB).toHaveLength(1);
-      expect(itemMenuDB[0].name).toBe(items[0].name);
-      expect(itemMenuDB[0].price).toBe(Number(items[0].price));
-      expect(itemMenuDB[0].categoryID).toBe(items[0].categoryID);
-      expect(itemMenuDB[0].description).toBe(items[0].description);
-      expect(itemMenuDB[0].timeToPrepare).toBe(items[0].timeToPrepare);
-      expect(itemMenuDB[0].active).toBe(true);
+      expect(itemMenuDB[0].name).toBe(table[0].name);
+      expect(itemMenuDB[0].price).toEqual(table[0].price);
+      expect(itemMenuDB[0].categoryID).toBe(table[0].categoryID);
+      expect(itemMenuDB[0].description).toBe(table[0].description);
+      expect(itemMenuDB[0].timeToPrepare).toBe(table[0].timeToPrepare);
+      
       expect(itemMenuDB[0].id).toBeDefined();
       expect(itemMenuDB[0].createdAt).toBeDefined();
+
+      previousItem = itemMenuDB[0];
     });
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*) com as informações:$/, async (method, url, docString) => {
+      const route = formatUrl(url, previousItem.id)
       const payload = JSON.parse(docString);
-      response = await request.put(url).send(payload);
-      expect(response.request.method).toBe(method);
+      response = await request.put(route).send(payload);
+      expect(response.request.method).toBe(formatParam(method));
     });
 
     then(/^o status code da resposta é (.*)$/, (statusCode) => {
-      expect(response.status).toBe(Number(statusCode));
+      expect(response.status).toBe(formatNumberParam(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body.msg).toEqual(expectedResponse.message);
     });
 
-    and(/^a lista de itens no Cardápio é:$/, async (table) => {
-      const items = table.hashes();
-      const menuItems = await mockMenuRepository.getItems();
-      expect(menuItems).toBe(itemMenuDB.length);
-      expect(menuItems).toHaveLength(items.length);
-      items.forEach((item: ItemMenuEntity, index: number) => {
-        expect(menuItems[index].name).toBe(item.name);
-        expect(menuItems[index].price).toBe(Number(item.price));
-        expect(menuItems[index].categoryID).toBe(item.categoryID);
-        expect(menuItems[index].description).toBe(item.description);
-        expect(menuItems[index].timeToPrepare).toBe(item.timeToPrepare);
+    and(/^a lista de itens no Cardápio é:$/, async (table: ItemMenuEntity[]) => {
+      expect(itemMenuDB.length).toEqual(table.length);
+      table.forEach((item: ItemMenuEntity, index: number) => {
+        expect(itemMenuDB[index].name).toBe(item.name);
+        expect(itemMenuDB[index].price).toBe(formatPrice(item.price));
+        expect(itemMenuDB[index].categoryID).toBe(item.categoryID);
+        expect(itemMenuDB[index].description).toBe(item.description);
+        expect(itemMenuDB[index].timeToPrepare).toBe(item.timeToPrepare);
       });
     });
   });
@@ -122,44 +115,40 @@ defineFeature(feature, (test) => {
     then,
     and
   }) => {
-    given(/^que há um item registrado no Cardápio com as informações:$/, async (table) => {
-      const items = table.hashes();
-      const alreadyExists = await mockMenuRepository.findOne((el) => el.name === items[0].name);
-      if (!alreadyExists) {
-        await mockMenuRepository.createItem(items[0]);
-      }
-      itemMenuDB = await mockMenuRepository.getItems();
+    given(/^que há um item registrado no Cardápio com as informações:$/, async (table: ItemMenuEntity[]) => {
+      await mockMenuRepository.createItem(table[0]);
+
       expect(itemMenuDB).toHaveLength(1);
-      expect(itemMenuDB[0].name).toBe(items[0].name);
-      expect(itemMenuDB[0].price).toBe(Number(items[0].price));
-      expect(itemMenuDB[0].categoryID).toBe(items[0].categoryID);
-      expect(itemMenuDB[0].description).toBe(items[0].description);
-      expect(itemMenuDB[0].timeToPrepare).toBe(items[0].timeToPrepare);
-      expect(itemMenuDB[0].active).toBe(true);
+      expect(itemMenuDB[0].name).toBe(table[0].name);
+      expect(itemMenuDB[0].price).toEqual(table[0].price);
+      expect(itemMenuDB[0].categoryID).toBe(table[0].categoryID);
+      expect(itemMenuDB[0].description).toBe(table[0].description);
+      expect(itemMenuDB[0].timeToPrepare).toBe(table[0].timeToPrepare);
+      
       expect(itemMenuDB[0].id).toBeDefined();
-      expect(itemMenuDB[0].createdAt).toBeDefined();
+      previousItem = itemMenuDB[0];
     });
 
-    when(/^o usuário faz uma requisição (.*) para a url (.*)$/, async (method, url) => {
-      response = await request.delete(url).send();
+    when(/^o usuário faz uma requisição "(.*)" para o endpoint "(.*)"$/, async (method, url) => {
+      const route = `/api/${url.replace(':id', previousItem.id)}`
+      response = await request.delete(route).send();
       expect(response.request.method).toBe(method)
     });
 
     then(/^o status code da resposta é (.*)$/, (statusCode) => {
-      expect(response.status).toBe(Number(statusCode));
+      expect(response.status).toBe(formatNumberParam(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body.msg).toEqual(expectedResponse.message);
     });
 
-    and(/^a lista de itens no Cardápio é:$/, async (table) => {
-      const items = table.hashes();
-      const menuItems = await mockMenuRepository.getItems();
-      expect(menuItems.length).toBe(items.length);
-      expect(menuItems).toHaveLength(0);
-      expect(menuItems.length).toBeGreaterThan(itemMenuDB.length);
+    and(/^a lista de itens no Cardápio é:$/, async (table: ItemMenuEntity[]) => {
+      itemMenuDB = await mockMenuRepository.getItems();
+      expect(itemMenuDB).toEqual([]);
+      expect(itemMenuDB.length).toBe(table.length);
+      expect(itemMenuDB[0]).toBeUndefined();
     });
   });
   test('Adicionar um item sem nome ao cardápio', ({
@@ -169,40 +158,31 @@ defineFeature(feature, (test) => {
     and
   }) => {
     given(/^que não há itens registrados no Cardápio$/, async () => {
-      itemMenuDB = await mockMenuRepository.getItems();
-      if (itemMenuDB.length > 0) {
-        await mockMenuRepository.delete(el => el.active);
-        itemMenuDB = await mockMenuRepository.getItems();
-      }
-      expect(itemMenuDB).toHaveLength(0)
+      expect(itemMenuDB.length).toEqual(0)
     });
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*) com as informações:$/, async (method, url, docString) => {
+      const route = formatUrl(url)
       const payload = JSON.parse(docString);
-      response = await request.post(url).send(payload);
-      expect(response.request.method).toBe(method);
+      response = await request.post(route).send(payload);
+      expect(response.request.method).toBe(formatParam(method));
     });
 
     then('o item não é adicionado ao cardápio', async () => {
-      const items = await mockMenuRepository.getItems();
-      expect(items).toEqual(itemMenuDB)
-      expect(items).toHaveLength(0)
+      expect(itemMenuDB).toHaveLength(0)
     });
 
     and(/^o status code da resposta é (.*)$/, (statusCode) => {
-      expect(response.status).toBe(Number(statusCode));
+      expect(response.status).toBe(formatNumberParam(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body.msg).toEqual(expectedResponse.message);
     });
 
-    and(/^a lista de itens no Cardápio é:$/, async (table) => {
-      const items = table.hashes();
-      const menuItems = await mockMenuRepository.getItems();
-      expect(menuItems.length).toBe(items.length);
-      expect(menuItems).toEqual(itemMenuDB)
+    and(/^a lista de itens no Cardápio é:$/, async (table: ItemMenuEntity[]) => {
+      expect(itemMenuDB.length).toBe(table.length);
     });
   });
   test('Adicionar um item sem preço no cardápio', ({
@@ -212,18 +192,14 @@ defineFeature(feature, (test) => {
     and
   }) => {
     given(/^que não há itens registrados no Cardápio$/, async () => {
-      itemMenuDB = await mockMenuRepository.getItems();
-      if (itemMenuDB.length > 0) {
-        await mockMenuRepository.delete(el => el.active);
-        itemMenuDB = await mockMenuRepository.getItems();
-      }
-      expect(itemMenuDB).toHaveLength(0)
+      expect(itemMenuDB.length).toEqual(0)
     });
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*) com as informações:$/, async (method, url, docString) => {
+      const route = formatUrl(url)
       const payload = JSON.parse(docString);
-      response = await request.post(url).send(payload);
-      expect(response.request.method).toBe(method);
+      response = await request.post(route).send(payload);
+      expect(response.request.method).toBe(formatParam(method));
     });
 
     then('o item não é adicionado ao cardápio', async () => {
@@ -233,19 +209,16 @@ defineFeature(feature, (test) => {
     });
 
     and(/^o status code da resposta é (.*)$/, (statusCode) => {
-      expect(response.status).toBe(Number(statusCode));
+      expect(response.status).toBe(formatNumberParam(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body.msg).toEqual(expectedResponse.message);
     });
 
-    and(/^a lista de itens no Cardápio é:$/, async (table) => {
-      const items = table.hashes();
-      const menuItems = await mockMenuRepository.getItems();
-      expect(menuItems.length).toBe(items.length);
-      expect(menuItems).toEqual(itemMenuDB)
+    and(/^a lista de itens no Cardápio é:$/, async (table: ItemMenuEntity[]) => {
+      expect(itemMenuDB.length).toBe(table.length);
     });
   });
   test('Atualizar um item com informações preço inválido', ({
@@ -254,41 +227,50 @@ defineFeature(feature, (test) => {
     then,
     and
   }) => {
-    given(/^que há um item registrado no Cardápio com as informações:$/, async (table) => {
-      const items = table.hashes();
-      const alreadyExists = await mockMenuRepository.findOne((el) => el.name === items[0].name);
-      if (!alreadyExists) {
-        await mockMenuRepository.createItem(items[0]);
-      } 
-      itemMenuDB = await mockMenuRepository.getItems();      
+    given(/^que há um item registrado no Cardápio com as informações:$/, async (table: ItemMenuEntity[]) => {
+      await mockMenuRepository.createItem(table[0]); 
+      expect(itemMenuDB).toHaveLength(1);
+      expect(itemMenuDB[0].name).toBe(table[0].name);
+      expect(itemMenuDB[0].price).toEqual(table[0].price);
+      expect(itemMenuDB[0].categoryID).toBe(table[0].categoryID);
+      expect(itemMenuDB[0].description).toBe(table[0].description);
+      expect(itemMenuDB[0].timeToPrepare).toBe(table[0].timeToPrepare);
+
+      previousItem = itemMenuDB[0];
     });
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*) com as informações:$/, async (method, url, docString) => {
+      const route = formatUrl(url, previousItem.id)
       const payload = JSON.parse(docString);
-      response = await request.put(url).send(payload);
-      expect(response.request.method).toBe(method);
+      response = await request.put(route).send(payload);
+      expect(response.request.method).toBe(formatParam(method));
     });
 
-    then(/^o item (.*) não é atualizado no cardápio$/, async (nameItem) => {
-      const item = await mockMenuRepository.findOne((el) => el.name === nameItem);
-      const previousItem = itemMenuDB.find((el) => el.name === nameItem);
-      expect(item).toEqual(previousItem)
+    then(/^o item (.*) não é atualizado no cardápio$/, async (itemName) => {
+      expect(itemMenuDB[0].name).toBe(formatParam(itemName));
+      expect(itemMenuDB[0]).toEqual(previousItem)
     });
 
     and(/^o status code da resposta é (.*)$/, (statusCode) => {
-      expect(response.status).toBe(Number(statusCode));
+      expect(response.status).toBe(formatNumberParam(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body.msg).toEqual(expectedResponse.message);
     });
 
-    and(/^a lista de itens no Cardápio é:$/, async (table) => {
-      const items = table.hashes();
-      const menuItems = await mockMenuRepository.getItems();
-      expect(menuItems.length).toBe(items.length);
-      expect(menuItems).toEqual(itemMenuDB)
+    and(/^a lista de itens no Cardápio é:$/, async (table: ItemMenuEntity[]) => {
+      expect(itemMenuDB.length).toBe(table.length);
+
+      expect(previousItem).toEqual(itemMenuDB);
+      table.forEach((item: ItemMenuEntity, index: number) => {
+        expect(itemMenuDB[index].name).toBe(item.name);
+        expect(itemMenuDB[index].price).toBe(formatPrice(item.price));
+        expect(itemMenuDB[index].categoryID).toBe(item.categoryID);
+        expect(itemMenuDB[index].description).toBe(item.description);
+        expect(itemMenuDB[index].timeToPrepare).toBe(item.timeToPrepare);
+      });
     });
   });
   test('Atualizar um item com informações preço negativo', ({
@@ -297,47 +279,47 @@ defineFeature(feature, (test) => {
     then,
     and
   }) => {
-    given(/^que há um item registrado no Cardápio com as informações:$/, async (table) => {
-      const items = table.hashes();
-      const alreadyExists = await mockMenuRepository.findOne((el) => el.name === items[0].name);
-      if (!alreadyExists) {
-        await mockMenuRepository.createItem(items[0]);
-      } 
-      itemMenuDB = await mockMenuRepository.getItems();
+    given(/^que há um item registrado no Cardápio com as informações:$/, async (table: ItemMenuEntity[]) => {
+      await mockMenuRepository.createItem(table[0]); 
+      expect(itemMenuDB).toHaveLength(1);
+      expect(itemMenuDB[0].name).toBe(table[0].name);
+      expect(itemMenuDB[0].price).toEqual(table[0].price);
+      expect(itemMenuDB[0].categoryID).toBe(table[0].categoryID);
+      expect(itemMenuDB[0].description).toBe(table[0].description);
+      expect(itemMenuDB[0].timeToPrepare).toBe(table[0].timeToPrepare);
+      previousItem = itemMenuDB[0];
     });
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*) com as informações:$/, async (method, url, docString) => {
+      const route = formatUrl(url, previousItem.id)
       const payload = JSON.parse(docString);
-      response = await request.put(url).send(payload);
-      expect(response.request.method).toBe(method);
+      response = await request.put(route).send(payload);
+      expect(response.request.method).toBe(formatParam(method));
     });
 
-    then(/^o item (.*) não é atualizado no cardápio$/, async (nameItem) => {
-      const item = await mockMenuRepository.findOne((el) => el.name === nameItem);
-      const previousItem = itemMenuDB.find((el) => el.name === nameItem);
-      expect(item).toEqual(previousItem)
+    then(/^o item (.*) não é atualizado no cardápio$/, async (itemName) => {
+      expect(itemMenuDB[0].name).toBe(formatParam(itemName));
+      expect(itemMenuDB[0]).toEqual(previousItem)
     });
 
     and(/^o status code da resposta é (.*)$/, (statusCode) => {
-      expect(response.status).toBe(Number(statusCode));
+      expect(response.status).toBe(formatNumberParam(statusCode));
     });
       
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body.msg).toEqual(expectedResponse.message);
     });
 
-    and(/^a lista de itens no Cardápio é:$/, async (table) => {
-      const items = table.hashes();
-      const menuItems = await mockMenuRepository.getItems();
-      expect(menuItems.length).toBe(items.length);
-      expect(menuItems).toEqual(itemMenuDB);
-      items.forEach((item: ItemMenuEntity, index: number) => {
-        expect(menuItems[index].name).toBe(item.name);
-        expect(menuItems[index].price).toBe(Number(item.price));
-        expect(menuItems[index].categoryID).toBe(item.categoryID);
-        expect(menuItems[index].description).toBe(item.description);
-        expect(menuItems[index].timeToPrepare).toBe(item.timeToPrepare);
+    and(/^a lista de itens no Cardápio é:$/, async (table: ItemMenuEntity[]) => {
+      expect(itemMenuDB.length).toBe(table.length);
+      expect(previousItem).toEqual(itemMenuDB);
+      table.forEach((item: ItemMenuEntity, index: number) => {
+        expect(itemMenuDB[index].name).toBe(item.name);
+        expect(itemMenuDB[index].price).toBe(formatPrice(item.price));
+        expect(itemMenuDB[index].categoryID).toBe(item.categoryID);
+        expect(itemMenuDB[index].description).toBe(item.description);
+        expect(itemMenuDB[index].timeToPrepare).toBe(item.timeToPrepare);
       });
     });
   });
@@ -348,33 +330,26 @@ defineFeature(feature, (test) => {
     and
   }) => {
     given(/^que não há itens registrados no Cardápio$/, async () => {
-      itemMenuDB = await mockMenuRepository.getItems();
-      if (itemMenuDB.length > 0) {
-        await mockMenuRepository.delete(el => el.active);
-        itemMenuDB = await mockMenuRepository.getItems();
-      }
-      expect(itemMenuDB).toHaveLength(0)
+      expect(itemMenuDB.length).toEqual(0)
     });
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*)$/, async (method, url) => {
-      response = await request.delete(url).send();
-      expect(response.request.method).toBe(method);
+      const route = formatUrl(url, "0")
+      response = await request.delete(route).send();
+      expect(response.request.method).toBe(formatParam(method));
     });
 
     then(/^o status code da resposta é (.*)$/, async (statusCode) => {
-      expect(response.status).toBe(Number(statusCode));
+      expect(response.status).toBe(formatNumberParam(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body.msg).toEqual(expectedResponse.message);
     });
 
-    and(/^a lista de itens no Cardápio é:$/, async (table) => {
-      const items = table.hashes();
-      const menuItems = await mockMenuRepository.getItems();
-      expect(menuItems.length).toBe(items.length);
-      expect(menuItems).toEqual(itemMenuDB);
+    and(/^a lista de itens no Cardápio é:$/, async (table: ItemMenuEntity[]) => {
+      expect(itemMenuDB.length).toBe(table.length);
     });
   });
   test('Tentar enviar nenhuma informação para adicionar um item', ({
@@ -384,39 +359,30 @@ defineFeature(feature, (test) => {
     and
   }) => {
     given(/^que não há itens registrados no Cardápio$/, async () => {
-      itemMenuDB = await mockMenuRepository.getItems();
-      if (itemMenuDB.length > 0) {
-        await mockMenuRepository.delete(el => el.active);
-        itemMenuDB = await mockMenuRepository.getItems();
-      }
-      expect(itemMenuDB).toHaveLength(0)
+      expect(itemMenuDB.length).toEqual(0)
     });
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*) sem payload:$/, async (method, url) => {
-      response = await request.post(url).send();
-      expect(response.request.method).toBe(method);
+      const route = formatUrl(url)
+      response = await request.post(route).send();
+      expect(response.request.method).toBe(formatParam(method));
     });
 
     then('o item não é adicionado ao cardápio', async () => {
-      const items = await mockMenuRepository.getItems();
-      expect(items).toEqual(itemMenuDB)
-      expect(items.length).toBe(0);
+      expect(itemMenuDB).toHaveLength(0)
     });
 
     and(/^o status code da resposta é (.*)$/, (statusCode) => {
-      expect(response.status).toBe(Number(statusCode));
+      expect(response.status).toBe(formatNumberParam(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body.msg).toEqual(expectedResponse.message);
     });
 
-    and(/^a lista de itens no Cardápio é:$/, async (table) => {
-      const items = table.hashes();
-      const menuItems = await mockMenuRepository.getItems();
-      expect(menuItems.length).toBe(items.length);
-      expect(menuItems).toEqual(itemMenuDB)
+    and(/^a lista de itens no Cardápio é:$/, async (table: ItemMenuEntity[]) => {
+      expect(itemMenuDB.length).toBe(table.length);
     });
   });
   test('Tentar enviar nenhuma informação para atualizar um item', ({
@@ -425,40 +391,42 @@ defineFeature(feature, (test) => {
     then,
     and
   }) => {
-    given(/^que há um item registrado no Cardápio com as informações:$/, async (table) => {
-      const items = table.hashes();
-      const alreadyExists = await mockMenuRepository.findOne((el) => el.name === items[0].name);
-      if (!alreadyExists) {
-        await mockMenuRepository.createItem(items[0]);
-      } 
-      itemMenuDB = await mockMenuRepository.getItems();
+    given(/^que há um item registrado no Cardápio com as informações:$/, async (table: ItemMenuEntity[]) => {
+      await mockMenuRepository.createItem(table[0]); 
+      expect(itemMenuDB).toHaveLength(1);
+      expect(itemMenuDB[0].name).toBe(table[0].name);
+      expect(itemMenuDB[0].price).toEqual(table[0].price);
+      expect(itemMenuDB[0].categoryID).toBe(table[0].categoryID);
+      expect(itemMenuDB[0].description).toBe(table[0].description);
+      expect(itemMenuDB[0].timeToPrepare).toBe(table[0].timeToPrepare);
+
+      previousItem = itemMenuDB[0];
     });
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*) sem payload:$/, async (method, url) => {
-      response = await request.put(url).send();
-      expect(response.request.method).toBe(method);
+      const route = formatUrl(url, previousItem.id)
+      response = await request.put(route).send();
+      expect(response.request.method).toBe(formatParam(method));
     });
 
     then(/^o item (.*) não é atualizado no cardápio$/, async (itemName) => {
-      const item = await mockMenuRepository.findOne((el) => el.name === itemName);
-      const previousItem = itemMenuDB.find((el) => el.name === itemName);
-      expect(item).toEqual(previousItem)
+      expect(itemMenuDB[0].name).toBe(formatParam(itemName));
+      expect(itemMenuDB[0]).toEqual(previousItem)
     });
 
     and(/^o status code da resposta é (.*)$/, (statusCode) => {
-      expect(response.status).toBe(Number(statusCode));
+      expect(response.status).toBe(formatNumberParam(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body.msg).toEqual(expectedResponse.message);
     });
 
-    and(/^a lista de itens no Cardápio é:$/, async (table) => {
-      const items = table.hashes();
-      const menuItems = await mockMenuRepository.getItems();
-      expect(menuItems.length).toBe(items.length);
-      expect(menuItems).toEqual(itemMenuDB)
+    and(/^a lista de itens no Cardápio é:$/, async (table: ItemMenuEntity[]) => {
+      expect(itemMenuDB.length).toBe(table.length);
+
+      expect(previousItem).toEqual(itemMenuDB);
     });
   });
   test('Adicionar um item existente ao cardápio', ({
@@ -467,29 +435,26 @@ defineFeature(feature, (test) => {
     then,
     and
   }) => {
-    given(/^que há um item no Cardápio com as informações:$/, async (table) => {
-      const items = table.hashes();
-      const alreadyExists = await mockMenuRepository.findOne(
-        (el) => el.name === items[0].name
-      );
-      if (!alreadyExists) {
-        await mockMenuRepository.createItem(items[0]);
-      }
-      itemMenuDB = await mockMenuRepository.getItems();
+    given(/^que há um item no Cardápio com as informações:$/, async (table: ItemMenuEntity[]) => {
+      await mockMenuRepository.createItem(table[0]);
+      
       expect(itemMenuDB).toHaveLength(1);
-      expect(itemMenuDB[0].name).toBe(items[0].name);
-      expect(itemMenuDB[0].price).toBe(Number(items[0].price));
-      expect(itemMenuDB[0].categoryID).toBe(items[0].categoryID);
-      expect(itemMenuDB[0].description).toBe(items[0].description);
-      expect(itemMenuDB[0].timeToPrepare).toBe(items[0].timeToPrepare);
-      expect(itemMenuDB[0].active).toBe(true);
+      expect(itemMenuDB[0].name).toBe(table[0].name);
+      expect(itemMenuDB[0].price).toEqual(table[0].price);
+      expect(itemMenuDB[0].categoryID).toBe(table[0].categoryID);
+      expect(itemMenuDB[0].description).toBe(table[0].description);
+      expect(itemMenuDB[0].timeToPrepare).toBe(table[0].timeToPrepare);
+      
       expect(itemMenuDB[0].id).toBeDefined();
+
+      previousItem = itemMenuDB[0];
     });
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*) com as informações:$/, async (method, url, docString) => {
+      const route = formatUrl(url)
       const payload = JSON.parse(docString);
-      response = await request.post(url).send(payload);
-      expect(response.request.method).toBe(method);
+      response = await request.post(route).send(payload);
+      expect(response.request.method).toBe(formatParam(method));
     });
 
     then('o item não é adicionado ao cardápio', async () => {
@@ -499,19 +464,25 @@ defineFeature(feature, (test) => {
     });
 
     and(/^o status code da resposta é (.*)$/, (statusCode) => {
-      expect(response.status).toBe(Number(statusCode));
+      expect(response.status).toBe(formatNumberParam(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body.msg).toEqual(expectedResponse.message);
     });
 
-    and(/^a lista de itens no Cardápio é:$/, async (table) => {
-      const items = table.hashes();
-      const menuItems = await mockMenuRepository.getItems();
-      expect(menuItems.length).toBe(items.length);
-      expect(menuItems).toEqual(itemMenuDB);
+    and(/^a lista de itens no Cardápio é:$/, async (table: ItemMenuEntity[]) => {
+      expect(itemMenuDB.length).toBe(table.length);
+      expect(previousItem).toEqual(itemMenuDB);
+
+      table.forEach((item: ItemMenuEntity, index: number) => {
+        expect(itemMenuDB[index].name).toBe(item.name);
+        expect(itemMenuDB[index].price).toBe(formatPrice(item.price));
+        expect(itemMenuDB[index].categoryID).toBe(item.categoryID);
+        expect(itemMenuDB[index].description).toBe(item.description);
+        expect(itemMenuDB[index].timeToPrepare).toBe(item.timeToPrepare);
+      });
     });
   });
   test('Adicionar um item com categoria inválida ao cardápio', ({
@@ -521,40 +492,31 @@ defineFeature(feature, (test) => {
     and
   }) => {
     given(/^que não há itens registrados no Cardápio$/, async () => {
-      itemMenuDB = await mockMenuRepository.getItems();
-      if (itemMenuDB.length > 0) {
-        await mockMenuRepository.delete(el => el.active);
-        itemMenuDB = await mockMenuRepository.getItems();
-      }
-      expect(itemMenuDB).toHaveLength(0);
+      expect(itemMenuDB.length).toEqual(0);
     });
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*) com as informações:$/, async (method, url, docString) => {
+      const route = formatUrl(url)
       const payload = JSON.parse(docString);
-      response = await request.post(url).send(payload);
-      expect(response.request.method).toBe(method);
+      response = await request.post(route).send(payload);
+      expect(response.request.method).toBe(formatParam(method));
     });
 
     then('o item não é adicionado ao cardápio', async () => {
-      const items = await mockMenuRepository.getItems();
-      expect(items).toEqual(itemMenuDB);
-      expect(items).toHaveLength(0);
+      expect(itemMenuDB).toHaveLength(0);
     });
 
     and(/^o status code da resposta é (.*)$/, (statusCode) => {
-      expect(response.status).toBe(Number(statusCode));
+      expect(response.status).toBe(formatNumberParam(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body.msg).toEqual(expectedResponse.message);
     });
 
-    and(/^a lista de itens no Cardápio é:$/, async (table) => {
-      const items = table.hashes();
-      const menuItems = await mockMenuRepository.getItems();
-      expect(menuItems.length).toBe(items.length);
-      expect(menuItems).toEqual(itemMenuDB);
+    and(/^a lista de itens no Cardápio é:$/, async (table: ItemMenuEntity[]) => {
+      expect(itemMenuDB).toHaveLength(table.length);
     });
   });
   test('Atualizar um item com categoria inválida', ({
@@ -563,49 +525,52 @@ defineFeature(feature, (test) => {
     then,
     and
   }) => {
-    given(/^que há um item registrado no Cardápio com as informações:$/, async (table) => {
-      const items = table.hashes();
-      const alreadyExists = await mockMenuRepository.findOne((el) => el.name === items[0].name);
-      if (!alreadyExists) {
-        await mockMenuRepository.createItem(items[0]);
-      }
-      itemMenuDB = await mockMenuRepository.getItems();
+    given(/^que há um item registrado no Cardápio com as informações:$/, async (table: ItemMenuEntity[]) => {
+      await mockMenuRepository.createItem(table[0]);
+      
       expect(itemMenuDB).toHaveLength(1);
-      expect(itemMenuDB[0].name).toBe(items[0].name);
-      expect(itemMenuDB[0].price).toBe(Number(items[0].price));
-      expect(itemMenuDB[0].categoryID).toBe(items[0].categoryID);
-      expect(itemMenuDB[0].description).toBe(items[0].description);
-      expect(itemMenuDB[0].timeToPrepare).toBe(items[0].timeToPrepare);
-      expect(itemMenuDB[0].active).toBe(true);
+      expect(itemMenuDB[0].name).toBe(table[0].name);
+      expect(itemMenuDB[0].price).toEqual(table[0].price);
+      expect(itemMenuDB[0].categoryID).toBe(table[0].categoryID);
+      expect(itemMenuDB[0].description).toBe(table[0].description);
+      expect(itemMenuDB[0].timeToPrepare).toBe(table[0].timeToPrepare);
+      
       expect(itemMenuDB[0].id).toBeDefined();
+      previousItem = itemMenuDB[0];
     });
 
     when(/^o usuário faz uma requisição (.*) para o endpoint (.*) com as informações:$/, async (method, url, docString) => {
+      const route = formatUrl(url, previousItem.id)
       const payload = JSON.parse(docString);
-      response = await request.put(url).send(payload);
-      expect(response.request.method).toBe(method);
+      response = await request.put(route).send(payload);
+      expect(response.request.method).toBe(formatParam(method));
     });
 
     then(/^o item (.*) não é atualizado no cardápio$/, async (itemName) => {
-      const item = await mockMenuRepository.findOne((el) => el.name === itemName);
-      const previousItem = itemMenuDB.find((el) => el.name === itemName);
-      expect(item).toEqual(previousItem); 
+      expect(itemMenuDB[0].name).toBe(formatParam(itemName));
+      expect(itemMenuDB[0]).toEqual(previousItem); 
     });
 
     and(/^o status code da resposta é (.*)$/, (statusCode) => {
-      expect(response.status).toBe(Number(statusCode));
+      expect(response.status).toBe(formatNumberParam(statusCode));
     });
 
-    and('o corpo da resposta é:', (docString) => {
+    and('a mensagem da resposta é:', (docString) => {
       const expectedResponse = JSON.parse(docString);
-      expect(response.body.message).toEqual(expectedResponse);
+      expect(response.body.msg).toEqual(expectedResponse.message);
     });
 
-    and(/^a lista de itens no Cardápio é:$/, async (table) => {
-      const items = table.hashes();
-      const menuItems = await mockMenuRepository.getItems();
-      expect(menuItems.length).toBe(items.length);
-      expect(menuItems).toEqual(itemMenuDB);
+    and(/^a lista de itens no Cardápio é:$/, async (table: ItemMenuEntity[]) => {
+      expect(itemMenuDB.length).toHaveLength(table.length);
+
+      expect(previousItem).toEqual(itemMenuDB);
+      table.forEach((item: ItemMenuEntity, index: number) => {
+        expect(itemMenuDB[index].name).toBe(item.name);
+        expect(itemMenuDB[index].price).toBe(formatPrice(item.price));
+        expect(itemMenuDB[index].categoryID).toBe(item.categoryID);
+        expect(itemMenuDB[index].description).toBe(item.description);
+        expect(itemMenuDB[index].timeToPrepare).toBe(item.timeToPrepare);
+      });
     });
   })
 });

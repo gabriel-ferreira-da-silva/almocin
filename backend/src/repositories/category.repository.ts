@@ -26,7 +26,7 @@ class CategoryRepository extends BaseRepository<CategoryEntity> {
   }
 
   public async deleteCategory(id: string): Promise<void> {
-    await this.delete((item) => item.id === id);
+    await this.delete((item) => item.id !== id);
   }
 }
 
