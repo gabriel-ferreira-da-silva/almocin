@@ -50,6 +50,15 @@ class MenuService {
   }
 
   public async createItem(data: ItemMenuEntity): Promise<MenuModel> {
+    const alreadyExists = await this.menuRepository.getItemByName(data.name);
+
+    if (alreadyExists) {
+      throw new HttpNotFoundError({
+        msgCode: 'Já existe',
+        msg: `Item ${data.name} já existe no cardápio`,
+      });
+    }
+
     const price = parseFloat(data.price.toFixed(2));
     const entity = await this.menuRepository.createItem(data);
     const category = await this.categoryRepository.getCategory(entity.categoryID);
@@ -68,8 +77,8 @@ class MenuService {
     const previousItem = await this.menuRepository.getItem(id);
     if (!previousItem) {
       throw new HttpNotFoundError({
-        msg: 'Não encontrado',
-        msgCode: 'Item não encontrado no cardápio',
+        msgCode: 'Não encontrado',
+        msg: 'Item não encontrado no cardápio',
       });
     }
 
@@ -103,8 +112,8 @@ class MenuService {
 
     if (!entity) {
       throw new HttpNotFoundError({
-        msg: 'Não encontrado',
-        msgCode: 'Item não encontrado no cardápio',
+        msgCode: 'Não encontrado',
+        msg: 'Item não encontrado no cardápio',
       });
     }
     await this.menuRepository.deleteItem(id);

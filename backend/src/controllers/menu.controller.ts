@@ -1,7 +1,8 @@
 import { Router, Request, Response } from 'express';
-import { Result, SuccessResult } from '../utils/result';
+import { FailureResult, Result, SuccessResult } from '../utils/result';
 import MenuService from '../services/menu.service';
 import ItemMenuEntity from '../entities/item-menu.entity';
+import { HttpNotFoundError } from '../utils/errors/http.error';
 
 class MenuController {
   private prefix: string = '/menu';
@@ -53,13 +54,36 @@ class MenuController {
   }
 
   private async createItem(req: Request, res: Response) {
-    const item = await this.menuService.createItem(new ItemMenuEntity(req.body));
+    const { name, price } = req.body;
+    if (!name || name == '') {
+      return new FailureResult({
+        msg: 'O nome é obrigatório',
+        code: 400,
+      }).handle(res);
+    }
 
-    return new SuccessResult({
-      msg: `Item ${item.name} adicionado ao cardápio`,
-      data: item,
-      code: 201,
-    }).handle(res);
+    if (!price || price < 0) {
+      return new FailureResult({
+        msg: 'O preço é obrigatório',
+        code: 400,
+      }).handle(res);
+    }
+
+    try {
+      const item = await this.menuService.createItem(new ItemMenuEntity(req.body));
+  
+      return new SuccessResult({
+        msg: `Item ${item.name} adicionado ao cardápio`,
+        data: item,
+        code: 201,
+      }).handle(res);
+    } catch (e) {
+      const { msg } = e as HttpNotFoundError;
+      return new FailureResult({
+        msg,
+        code: 400,
+      }).handle(res)
+    }
   }
 
   private async updateItem(req: Request, res: Response) {
@@ -75,11 +99,19 @@ class MenuController {
   }
 
   private async deleteItem(req: Request, res: Response) {
-    const itemName = await this.menuService.deleteItem(req.params.id);
-
-    return new SuccessResult({
-      msg: `Item ${itemName} removido do cardápio`,
-    }).handle(res);
+    try {
+      const itemName = await this.menuService.deleteItem(req.params.id);
+  
+      return new SuccessResult({
+        msg: `Item ${itemName} removido do cardápio`,
+      }).handle(res);
+    } catch (e) {
+      const { msg } = e as HttpNotFoundError;
+      return new FailureResult({
+        msg,
+        code: 404,
+      }).handle(res)
+    }
   }
 }
 

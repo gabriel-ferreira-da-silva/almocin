@@ -14,6 +14,10 @@ class MenuRepository extends BaseRepository<ItemMenuEntity> {
     return await this.findOne((item) => item.id === id);
   }
 
+  public async getItemByName(name: string): Promise<ItemMenuEntity | null> {
+    return await this.findOne((item) => item.name === name);
+  }
+
   public async createItem(data: ItemMenuEntity): Promise<ItemMenuEntity> {
     return await this.add(data);
   }

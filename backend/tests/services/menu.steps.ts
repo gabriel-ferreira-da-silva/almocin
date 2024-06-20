@@ -25,6 +25,7 @@ defineFeature(feature, (scenario) => {
       createItem = jest.fn()
       updateItem = jest.fn()
       deleteItem = jest.fn()
+      getItemByName = jest.fn()
     }
     class mockCategoryRepository extends mockBaseRepository {
       constructor() {
@@ -250,76 +251,34 @@ defineFeature(feature, (scenario) => {
     when,
     then
   }) => {
-    given(/^o método deleteItem têm como parâmetros "(.*)"$/, (arg0) => {
+    given('o método deleteItem retorna o nome do item apagado, não há itens no repositório', () => {
+      let items: ItemMenuEntity[] = []
+      jest.spyOn(menuRepository, 'getItem').mockImplementation(
+        async (id: string) => items.find(el => el.id == id) || null
+      )
 
+      jest.spyOn(menuRepository, 'deleteItem').mockImplementation(
+        async (id: string) => {
+          items = items.filter(el => el.id != id)
+        }
+      )
     });
 
-    and('o método deleteItem retorna nada', () => {
-
-    });
-
-    when(/^eu chamo o método deleteItem com os parâmetros "(.*)"$/, (arg0) => {
-
+    when(/^eu chamo o método deleteItem com os parâmetros "(.*)"$/, async (id) => {
+      try {
+        await menuService.deleteItem(id)
+      } catch (e) {
+        itemMenuModel = e
+      }
     });
 
     then(/^nenhum item é apagado do MenuRepository$/, () => {
-
+      expect(menuRepository.deleteItem).toHaveBeenCalledTimes(0)
+      expect(menuRepository.getItem).toHaveBeenCalled()
     });
 
-    and('o método deleteItem retorna nada', () => {
-
-    });
-  });
-  scenario('Tentar criar um item sem nome', ({
-    given,
-    and,
-    when,
-    then
-  }) => {
-    given(/^o método createItem têm como parâmetros "(.*)"$/, (arg0) => {
-
-    });
-
-    and('o método createItem retorna o item criado', () => {
-
-    });
-
-    and('para utilizar o método createItem é necessário passar os parâmetros:', (table) => {
-
-    });
-
-    when('eu chamo o método createItem com os parâmetros:', (docString) => {
-
-    });
-
-    then(/^o método createItem retorna a mensagem "(.*)"$/, (arg0) => {
-
-    });
-  });
-  scenario('Tentar criar um item sem preço', ({
-    given,
-    and,
-    when,
-    then
-  }) => {
-    given(/^o método createItem têm como parâmetros "(.*)"$/, (arg0) => {
-
-    });
-
-    and('o método createItem retorna o item criado', () => {
-
-    });
-
-    and('para utilizar o método createItem é necessário passar os parâmetros:', (table) => {
-
-    });
-
-    when('eu chamo o método createItem com os parâmetros:', (docString) => {
-
-    });
-
-    then(/^o método createItem retorna a mensagem "(.*)"$/, (arg0) => {
-
+    and(/^o método deleteItem retorna "(.*)"$/, (msg) => {
+      expect(itemMenuModel.msg).toEqual(msg)
     });
   });
   scenario('Tentar atualizar item com id inexistente', ({
@@ -328,37 +287,85 @@ defineFeature(feature, (scenario) => {
     when,
     then
   }) => {
-    given(/^o método updateItem têm como parâmetros "(.*)"$/, (arg0) => {
+    given('o método updateItem retorna o item baseado no id e data especificado', () => {
+      const items: ItemMenuEntity[] = []
+      jest.spyOn(menuRepository, 'getItem').mockImplementation(
+        async (id: string) =>  items.find(el => el.id == id) || null
+      )
 
+      jest.spyOn(menuRepository, 'updateItem').mockImplementation(
+        async (id: string, data: ItemMenuEntity) => {
+          const item = items.find(el => el.id == id) as ItemMenuEntity
+          if (item) {
+            return { ...item, ...data }
+          }
+          return item 
+        }
+      )
     });
 
-    and(/^o método updateItem retorna o item baseado no "(.*)" especificado$/, (arg0) => {
-
+    when('eu chamo o método updateItem com os parâmetros:', async (docString) => {
+      try {
+        const data = JSON.parse(docString)
+        itemMenuModel = await menuService.updateItem(data.id, data.data) 
+      } catch (e) {
+        itemMenuModel = e
+      }
     });
 
-    when('eu chamo o método updateItem com os parâmetros:', (docString) => {
-
+    then(/^o método updateItem retorna a mensagem "(.*)"$/, (msg) => {
+      expect(itemMenuModel.msg).toEqual(msg)
     });
 
-    then(/^o método updateItem retorna a mensagem "(.*)"$/, (arg0) => {
-
+    and('nenhum item é atualizado no MenuRepository', () => {
+      expect(menuRepository.getItem).toHaveBeenCalled()
+      expect(menuRepository.updateItem).toHaveBeenCalledTimes(0)
+      expect(categoryRepository.getCategory).toHaveBeenCalledTimes(0)
     });
   });
   scenario('Tentar adicionar item existente', ({
     given,
+    and,
     when,
     then
   }) => {
-    given(/^o método createItem têm como parâmetros "(.*)"$/, (arg0) => {
+    given(/^o método createItem retorna o item criado e os itens de MenuRepository são:$/, (table: ItemMenuEntity[]) => {
+      jest.spyOn(menuRepository, 'getItemByName').mockImplementation(
+        async (name: string) => table.find(item => item.name === name) || null
+      )
 
+      jest.spyOn(menuRepository, 'createItem').mockImplementation(
+        async (data: ItemMenuEntity) => {
+          return data
+        }
+      )
+
+      jest.spyOn(menuRepository, 'getItems').mockImplementation(
+        async () => table
+      )
+
+      jest.spyOn(categoryRepository, 'getCategory').mockImplementation(
+        async () => null
+      );
     });
 
-    when('eu chamo o método createItem com os parâmetros:', (docString) => {
-
+    when('eu chamo o método createItem com os parâmetros:', async (docString) => {
+      try {
+        const data = JSON.parse(docString)
+        itemMenuModel = await menuService.createItem(data)
+      } catch (e) {
+        itemMenuModel = e
+      }
     });
 
-    then(/^o método createItem retorna a mensagem "(.*)"$/, (arg0) => {
+    then(/^o método createItem retorna a mensagem "(.*)"$/, (msg) => {
+      expect(itemMenuModel.msg).toEqual(msg)
+    });
 
+    and('nenhum item é criado no MenuRepository', () => {
+      expect(menuRepository.createItem).toHaveBeenCalledTimes(0)
+      expect(menuRepository.getItemByName).toHaveBeenCalled()
+      expect(categoryRepository.getCategory).toHaveBeenCalledTimes(0)
     });
   });
 });

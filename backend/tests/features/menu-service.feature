@@ -119,80 +119,48 @@ Scenario: Apagar um item do cardápio
   And o método deleteItem retorna "Hamburguer"
 
 Scenario: Tentar apagar um item que não existe
-  Given o método deleteItem têm como parâmetros ":id"
-  And o método deleteItem retorna nada
-  When eu chamo o método deleteItem com os parâmetros ":id"
+  Given o método deleteItem retorna o nome do item apagado, não há itens no repositório
+  When eu chamo o método deleteItem com os parâmetros "2"
   Then nenhum item é apagado do MenuRepository
-  And o método deleteItem retorna nada
-
-Scenario: Tentar criar um item sem nome
-  Given o método createItem têm como parâmetros "data: ItemMenu"
-  And o método createItem retorna o item criado
-  And para utilizar o método createItem é necessário passar os parâmetros:
-    | name | price | description | category | image | timeToPrepare |
-  When eu chamo o método createItem com os parâmetros:
-  """
-  {
-    name: '',
-    price: 20.00,
-    description: 'feito de carne',
-    categoryID: '5',
-    image: 'ham.jpg',
-    timeToPrepare: 10
-  }
-  """
-  Then o método createItem retorna a mensagem "O nome é requerido"
-
-Scenario: Tentar criar um item sem preço
-  Given o método createItem têm como parâmetros "data: ItemMenu"
-  And o método createItem retorna o item criado
-  And para utilizar o método createItem é necessário passar os parâmetros:
-    | name | price | description | category | image | timeToPrepare |
-  When eu chamo o método createItem com os parâmetros:
-  """
-  {
-    "data": {
-      name: 'Hambuguer',
-      price: null,
-      description: 'feito de carne',
-      categoryID: '5',
-      image: 'ham.jpg',
-      timeToPrepare: 10
-    }
-  }
-  """
-  Then o método createItem retorna a mensagem "O preço é requerido"
+  And o método deleteItem retorna "Item não encontrado no cardápio"
 
 Scenario: Tentar atualizar item com id inexistente
-  Given o método updateItem têm como parâmetros ":id" e "data: ItemMenu"
-  And o método updateItem retorna o item baseado no ":id" e "data" especificado
+  Given o método updateItem retorna o item baseado no id e data especificado
   When eu chamo o método updateItem com os parâmetros:
   """
-    id: 10
-    data: {
-      name: 'Hamburguer',
-      price: 20.00,
-      description: 'feito de carne',
-      categoryID: '5',
-      image: 'ham.jpg',
-      timeToPrepare: 10
+  {
+    "id": 10,
+    "data": {
+      "name": "Pizza",
+      "price": null,
+      "description": "Feita de queijo",
+      "categoryID": "5",
+      "image": "pizza.jpg",
+      "timeToPrepare": 15
     }
+  }
   """
-  Then o método updateItem retorna a mensagem "Item não encontrado no Cardápio"
+  Then o método updateItem retorna a mensagem "Item não encontrado no cardápio"
+  And nenhum item é atualizado no MenuRepository
 
 Scenario: Tentar adicionar item existente
-  Given o método createItem têm como parâmetros "data: ItemMenu"
+  Given o método createItem retorna o item criado e os itens de MenuRepository são:
+    | id | name | price | description | categoryID | image | timeToPrepare |
+    | 1 | Coca-Cola | 5.00 | "Gelada" | "1" | "coca-cola.jpg" | 5 |
+    | 2 | Hamburguer | 15.00 | "feito de carne" | "2" | "ham.jpg" | 10 |
+    | 3 | Batata Frita | 10.00 | "Sem Oléo" | "3" | "bt.jpg" | 5 |
+    | 4 | Sorvete | 7.00 | "Chocolate" | "2" | "ice-cream.jpg" | 5 |
+    | 5 | Cerveja | 8.00 | "Cerveja gelada" | "1" | "cerveja.jpg" | 5 |
   When eu chamo o método createItem com os parâmetros:
   """
   {
+    "name": "Coca-Cola",
+    "price": 5.00,
+    "description": "Geladinha",
+    "categoryID": "1",
+    "image": "coca-cola.jpg",
+    "timeToPrepare": 5
   }
-    data: {
-      name: 'Coca-Cola',
-      price: 5.00,
-      description: 'Geladinha',
-      categoryID: '1',
-      image: 'coca-cola.jpg',
-      timeToPrepare: 5
-    }
   """
-  Then o método createItem retorna a mensagem "Item Coca-Cola já existe no Cardápio"
+  Then o método createItem retorna a mensagem "Item Coca-Cola já existe no cardápio"
+  And nenhum item é criado no MenuRepository
