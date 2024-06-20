@@ -54,7 +54,7 @@ class MenuController {
   }
 
   private async createItem(req: Request, res: Response) {
-    const { name, price } = req.body;
+    const { name, price, categoryID } = req.body;
     if (!name || name == '') {
       return new FailureResult({
         msg: 'O nome é obrigatório',
@@ -62,9 +62,16 @@ class MenuController {
       }).handle(res);
     }
 
-    if (!price || price < 0) {
+    if (!price || price < 0 || Number.isNaN(Number(price))) {
       return new FailureResult({
         msg: 'O preço é obrigatório',
+        code: 400,
+      }).handle(res);
+    }
+
+    if (categoryID && Number.isNaN(Number(categoryID))) {
+      return new FailureResult({
+        msg: 'A categoria é inválida',
         code: 400,
       }).handle(res);
     }
@@ -87,6 +94,28 @@ class MenuController {
   }
 
   private async updateItem(req: Request, res: Response) {
+    const { name, price, categoryID } = req.body;
+    if (name && name == '') {
+      return new FailureResult({
+        msg: 'O nome é obrigatório',
+        code: 400,
+      }).handle(res);
+    }
+
+    if (price && (price < 0 || Number.isNaN(Number(price)))) {
+      return new FailureResult({
+        msg: 'O preço é obrigatório',
+        code: 400,
+      }).handle(res);
+    }
+
+    if (categoryID && Number.isNaN(Number(categoryID))) {
+      return new FailureResult({
+        msg: 'A categoria é inválida',
+        code: 400,
+      }).handle(res);
+    }
+
     const item = await this.menuService.updateItem(
       req.params.id,
       new ItemMenuEntity(req.body)

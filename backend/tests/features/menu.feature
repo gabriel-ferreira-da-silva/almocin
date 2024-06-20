@@ -81,7 +81,7 @@ Scenario: Adicionar um item sem nome ao cardápio
   And a mensagem da resposta é:
     """
     {
-      "message": "O nome é requerido"
+      "message": "O nome é obrigatório"
     }
     """
   And a lista de itens no Cardápio é:
@@ -104,7 +104,7 @@ Scenario: Adicionar um item sem preço no cardápio
   And a mensagem da resposta é:
     """
     {
-      "message": "O preço é requerido"
+      "message": "O preço é obrigatório"
     }
     """
   And a lista de itens no Cardápio é:
@@ -125,7 +125,7 @@ Scenario: Atualizar um item com informações preço inválido
   And a mensagem da resposta é:
     """
     {
-      "message": "O preço deve ser um número"
+      "message": "O preço é obrigatório"
     }
     """
   And a lista de itens no Cardápio é:
@@ -148,7 +148,7 @@ Scenario: Atualizar um item com informações preço negativo
   And a mensagem da resposta é:
     """
     {
-      "message": "O preço deve ser maior que zero"
+      "message": "O preço é obrigatório"
     }
     """
   And a lista de itens no Cardápio é:
@@ -162,7 +162,7 @@ Scenario: Remover um item que não existe no cardápio
   And a mensagem da resposta é:
     """
     {
-      "message": "Item Batata não existe no cardápio"
+      "message": "Item não encontrado no cardápio"
     }
     """
   And a lista de itens no Cardápio é:
@@ -176,7 +176,7 @@ Scenario: Tentar enviar nenhuma informação para adicionar um item
   And a mensagem da resposta é:
     """
     {
-      "message": "O nome é requerido, o preço é requerido"
+      "message": "O nome é obrigatório"
     }
     """
   And a lista de itens no Cardápio é:
@@ -210,7 +210,7 @@ Scenario: Adicionar um item existente ao cardápio
       "price": 10.00,
       "description": "Não é frita",
       "image": "None",
-      "category": "Fritas",
+      "categoryID": "1",
       "timeToPrepare": "0 minutos"
     }
     """
@@ -235,7 +235,7 @@ Scenario: Adicionar um item com categoria inválida ao cardápio
       "price": 10.00,
       "description": "Não é a frita",
       "image": "None",
-      "category": "Inválida",
+      "categoryID": "Inválida",
       "timeToPrepare": "0 minutos"
     }
     """
@@ -257,7 +257,7 @@ Scenario: Atualizar um item com categoria inválida
   When o usuário faz uma requisição "PUT" para o endpoint "menu/:id" com as informações:
     """
     {
-      "category": "Inválida"
+      "categoryID": "Inválida"
     }
     """
   Then o item "Batata" não é atualizado no cardápio
