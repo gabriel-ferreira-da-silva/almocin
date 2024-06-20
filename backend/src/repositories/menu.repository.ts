@@ -14,6 +14,10 @@ class MenuRepository extends BaseRepository<ItemMenuEntity> {
     return await this.findOne((item) => item.id === id);
   }
 
+  public async getItemByName(name: string): Promise<ItemMenuEntity | null> {
+    return await this.findOne((item) => item.name === name);
+  }
+
   public async createItem(data: ItemMenuEntity): Promise<ItemMenuEntity> {
     return await this.add(data);
   }
@@ -21,12 +25,12 @@ class MenuRepository extends BaseRepository<ItemMenuEntity> {
   public async updateItem(
     id: string,
     data: ItemMenuEntity
-  ): Promise<ItemMenuEntity | null> {
-    return await this.update((item) => item.id === id, data);
+  ): Promise<ItemMenuEntity> {
+    return await this.update((item) => item.id === id, data) as ItemMenuEntity;
   }
 
   public async deleteItem(id: string): Promise<void> {
-    await this.delete((item) => item.id === id);
+    await this.delete((item) => item.id !== id);
   }
 }
 

@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { Request } from 'express';
 import { HttpNotFoundError,HttpBadRequestError } from '../utils/errors/http.error';
 import UserRepository from '../repositories/user.repository';
+import { generateToken } from '../utils/auth/generateToken';
 
 class LoginService {
   private userRepository: UserRepository;
@@ -19,21 +20,9 @@ class LoginService {
     }
 
     // Generate JWT token
-    const token = this.generateToken(user.id);
+    const token = generateToken(user.id);
 
     return token;
-  }
-
-  private generateToken(userId: string): string {
-    const payload = {
-      userId,
-    };
-
-    const options = {
-      expiresIn: '24h',
-    };
-
-    return jwt.sign(payload, process.env.JWT_SECRET || 'defaultSecret', options);
   }
 
   public static getUserIdFromRequest(req: Request): string | null {
@@ -59,7 +48,9 @@ class LoginService {
       throw new HttpBadRequestError({ msg: 'Invalid recovery question' });
     }
 
-    user.password = newPassword;
+    const hashedPassword = bcrypt.hashSync(newPassword, 10);
+
+    user.password = hashedPassword;
     await this.userRepository.updateUser(user.id, user);
   }
 }

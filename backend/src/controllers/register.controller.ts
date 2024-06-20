@@ -4,6 +4,7 @@ import UserEntity from '../entities/user.entity';
 import bcrypt from 'bcrypt';
 import { validateCep, validateEmail, validatePassword, validateRequiredFields } from '../utils/validation/validation';
 import { ValidationMessages } from '../utils/validation/validationMessages';
+import { HttpBadRequestError } from '../utils/errors/http.error';
 
 class RegisterController {
   private prefix: string = '/register';
@@ -73,7 +74,19 @@ class RegisterController {
         data: newUser,
       });
     } catch (error) {
-      console.error(error);
+      const msgCode = (error as HttpBadRequestError).msgCode;
+      if (msgCode === ValidationMessages.EMAIL_ALREADY_EXISTS) {
+        return res.status(400).json({
+          msg: ValidationMessages.EMAIL_ALREADY_EXISTS,
+        });
+      }
+
+      if (msgCode === ValidationMessages.CPF_ALREADY_EXISTS) {
+        return res.status(400).json({
+          msg: ValidationMessages.CPF_ALREADY_EXISTS,
+        });
+      }
+
       return res.status(500).json({
         msg: ValidationMessages.UNEXPECTED_ERROR,
       });
