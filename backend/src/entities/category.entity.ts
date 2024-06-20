@@ -7,5 +7,6 @@ export default class CategoryEntity extends BaseEntity {
   constructor(data: CategoryEntity) {
     super(data.id || "");
     this.name = data.name;
+    this.itemsId = data.itemsId || [];
   }
 }
