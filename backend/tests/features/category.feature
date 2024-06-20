@@ -3,13 +3,6 @@ Feature: Categorias
 As um usuário com permissão para manipular Categorias
 I want criar, atualizar e deletar Categorias
 So that eu possa gerenciar as Categorias no sistema
-
-    | id | name        |
-    | 0  | Promoção    |
-    | 1  | Bebidas     |
-    | 2  | Vegetariano |
-    | 3  | Jantar      |
-    | 4  | Aperitivos  |
   
 Scenario: Criar uma nova Categoria
   Given a lista de Categoria é:
