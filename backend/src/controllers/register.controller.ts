@@ -4,7 +4,7 @@ import UserEntity from '../entities/user.entity';
 import bcrypt from 'bcrypt';
 import { validateCep, validateEmail, validatePassword, validateRequiredFields } from '../utils/validation/validation';
 import { ValidationMessages } from '../utils/validation/validationMessages';
-import { HttpBadRequestError } from '../utils/errors/http.error';
+import { HttpBadRequestError, HttpNotFoundError } from '../utils/errors/http.error';
 
 class RegisterController {
   private prefix: string = '/register';
@@ -131,12 +131,24 @@ class RegisterController {
         data: updatedUser,
       });
     } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-        msg: ValidationMessages.UNEXPECTED_ERROR,
-      });
+      // Verifica o tipo de erro e envia uma resposta adequada
+      if (error instanceof HttpNotFoundError) {
+        return res.status(404).json({
+          msg: error.message,
+        });
+      } else if (error instanceof HttpBadRequestError) {
+        return res.status(400).json({
+          msg: error.message,
+        });
+      } else {
+        // Se for um erro desconhecido, retorna um erro 500
+        console.error(error);
+        return res.status(500).json({
+          msg: ValidationMessages.UNEXPECTED_ERROR,
+        });
+      }
     }
-  }
+  } 
 
   private async deleteUser(req: Request, res: Response) {
     try {
