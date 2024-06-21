@@ -50,12 +50,22 @@ class MenuService {
   }
 
   public async createItem(data: ItemMenuEntity): Promise<MenuModel> {
-    data.oldPrice = data.price;
+    const alreadyExists = await this.menuRepository.getItemByName(data.name);
+
+    if (alreadyExists) {
+      throw new HttpNotFoundError({
+        msgCode: 'Já existe',
+        msg: `Item ${data.name} já existe no cardápio`,
+      });
+    }
+
+    const price = parseFloat(data.price.toFixed(2));
     const entity = await this.menuRepository.createItem(data);
     const category = await this.categoryRepository.getCategory(entity.categoryID);
     const model = new MenuModel({
       ...entity,
-      oldPrice: data.oldPrice,
+      price: price,
+      oldPrice: price,
       category: category || null,
       hasPromotion: entity.oldPrice > entity.price,
     });
@@ -64,14 +74,27 @@ class MenuService {
   }
 
   public async updateItem(id: string, data: ItemMenuEntity): Promise<MenuModel> {
-    const entity = await this.menuRepository.updateItem(id, data);
-
-    if (!entity) {
+    const previousItem = await this.menuRepository.getItem(id);
+    if (!previousItem) {
       throw new HttpNotFoundError({
-        msg: 'Não encontrado',
-        msgCode: 'Item não encontrado no cardápio',
+        msgCode: 'Não encontrado',
+        msg: 'Item não encontrado no cardápio',
       });
     }
+
+    const newData: ItemMenuEntity = new ItemMenuEntity({
+      ...previousItem,
+      name: data?.name ?? previousItem.name,
+      image: data?.image ?? previousItem.image,
+      active: data?.active ?? previousItem.active,
+      timeToPrepare: data?.timeToPrepare ?? previousItem.timeToPrepare,
+      categoryID: data?.categoryID ?? previousItem.categoryID,
+      description: data?.description ?? previousItem.description,
+      price: data?.price ?? previousItem.price,
+      oldPrice: data.price ? previousItem.price : previousItem.oldPrice,
+    });
+
+    const entity = await this.menuRepository.updateItem(id, newData);
 
     const category = await this.categoryRepository.getCategory(entity.categoryID);
 
@@ -84,8 +107,17 @@ class MenuService {
     return model;
   }
 
-  public async deleteItem(id: string): Promise<void> {
+  public async deleteItem(id: string): Promise<string> {
+    const entity = await this.menuRepository.getItem(id);
+
+    if (!entity) {
+      throw new HttpNotFoundError({
+        msgCode: 'Não encontrado',
+        msg: 'Item não encontrado no cardápio',
+      });
+    }
     await this.menuRepository.deleteItem(id);
+    return entity.name;
   }
 }
 
