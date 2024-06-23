@@ -48,5 +48,9 @@ di.registerService(
 
 di.registerService(
   StatsService,
-  new StatsService()
+  new StatsService(
+    di.getRepository(MenuRepository),
+    di.getRepository(OrderRepository),
+    di.getRepository(UserRepository)
+  )
 );
