@@ -1,7 +1,6 @@
 import { Router, Request, Response } from 'express';
 import LoginService from '../services/login.service';
 import { HttpError } from '../utils/errors/http.error';
-import bcrypt from 'bcrypt';
 
 class LoginController {
   public prefix: string = '/login';
@@ -59,8 +58,7 @@ class LoginController {
     }
 
     try {
-      const hashedPassword = await bcrypt.hash(newPassword, 10); // Hash the new password
-      await this.loginService.resetPassword(email, recoveryQuestion, hashedPassword);
+      await this.loginService.resetPassword(email, recoveryQuestion, newPassword);
 
       return res.status(200).json({ msg: 'Password reset successful' });
     } catch (error) {
