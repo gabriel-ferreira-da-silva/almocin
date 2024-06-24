@@ -2,7 +2,7 @@ import CategoryEntity from '../entities/category.entity';
 import CategoryModel from '../models/category.model';
 import CategoryRepository from '../repositories/category.repository';
 import MenuRepository from '../repositories/menu.repository';
-import { HttpNotFoundError } from '../utils/errors/http.error';
+import { HttpBadRequestError, HttpNotFoundError } from '../utils/errors/http.error';
 
 class CategoryService {
   private categoryRepository: CategoryRepository;
@@ -49,6 +49,15 @@ class CategoryService {
   }
 
   public async createCategory(data: CategoryEntity): Promise<CategoryModel> {
+    const alreadyExists = await this.categoryRepository.getCategoryByName(data.name);
+
+    if (alreadyExists) {
+      throw new HttpBadRequestError({
+        msgCode: 'Categoria já existente.',
+        msg: `Categoria ${data.name} já existe no sistema`,
+      });
+    }
+    
     const entity = await this.categoryRepository.createCategory(data);
 
     const model = new CategoryModel({
@@ -59,7 +68,16 @@ class CategoryService {
     return model;
   }
 
-  public async updateCategory(id: string, data: CategoryEntity): Promise<CategoryModel> {
+  public async updateCategory(id: string, data: CategoryEntity): Promise<string> {
+    const alreadyExists = await this.categoryRepository.getCategoryByName(data.name);
+
+    if (alreadyExists) {
+      throw new HttpBadRequestError({
+        msgCode: 'Categoria já existente.',
+        msg: `Categoria ${data.name} já existe no sistema`,
+      });
+    }
+
     const entity = await this.categoryRepository.updateCategory(id, data);
 
     if (!entity) {
@@ -69,25 +87,30 @@ class CategoryService {
       });
     }
 
-    const model = new CategoryModel({
-      ...entity,
-      items: [],
-    });
-
-    return model;
+    return `Categoria ${entity.name} atualizada com sucesso.`;
   }
 
-  public async deleteCategory(id: string): Promise<void> {
+  public async deleteCategory(id: string): Promise<string> {
+    const category = await this.categoryRepository.getCategory(id);
+    if (!category) {
+      throw new HttpNotFoundError({
+        msgCode: 'Categoria não encontrada',
+        msg: 'Categoria não pode ser deletada pois não foi encontrada.',
+      });
+    }
+
     const items = await this.menuRepository.getItems();
 
     if (items.some((i) => i.categoryID === id)) {
-      throw new HttpNotFoundError({
-        msg: 'Categoria não pode ser deletada',
-        msgCode: 'Categoria não pode ser deletada pois existem itens associados a ela.',
+      throw new HttpBadRequestError({
+        msgCode: 'Categoria não pode ser deletada',
+        msg: 'Não é possível deletar pois há itens associados.',
       });
     }
 
     await this.categoryRepository.deleteCategory(id);
+
+    return category.name;
   }
 }
 

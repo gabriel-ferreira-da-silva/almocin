@@ -36,6 +36,7 @@ defineFeature(feature, (scenario) => {
       createCategory = jest.fn()
       updateCategory = jest.fn()
       deleteCategory = jest.fn()
+      getCategoryByName = jest.fn()
     }
     menuRepository = new mockMenuRepository()
     categoryRepository = new mockCategoryRepository()

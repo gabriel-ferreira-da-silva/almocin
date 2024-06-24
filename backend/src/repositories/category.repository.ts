@@ -28,6 +28,10 @@ class CategoryRepository extends BaseRepository<CategoryEntity> {
   public async deleteCategory(id: string): Promise<void> {
     await this.delete((item) => item.id !== id);
   }
+
+  public async getCategoryByName(name: string): Promise<CategoryEntity | null> {
+    return await this.findOne((item) => item.name === name);
+  }
 }
 
 export default CategoryRepository;
