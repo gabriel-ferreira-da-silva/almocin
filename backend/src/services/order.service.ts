@@ -2,6 +2,8 @@ import OrderModel from '../models/order.model';
 import OrderRepository from '../repositories/order.repository';
 import MenuRepository from '../repositories/menu.repository';
 import OrderEntity from '../entities/order.entity';
+import { HttpNotFoundError } from '../utils/errors/http.error';
+
 
 class OrderService {
   private orderRepository: OrderRepository;
@@ -34,6 +36,13 @@ class OrderService {
         ...item,  // Spread the properties of the order entity
         items: menu.filter(el => item.itemsId.includes(el.id)),  // Filter menu items to include only those with ids in item.itemsId
       }));
+
+      if (entity.length==0) {
+        throw new HttpNotFoundError({
+          msg: 'not found',
+          msgCode: 'Item não encontrado no cardápio',
+        });
+      }
     
     return model;
 }

@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { Result, SuccessResult } from '../utils/result';
+import { Result, SuccessResult, FailureResult } from '../utils/result';
 import OrderService from '../services/order.service';
 import { OrderStatus } from '../types/order';
 import OrderEntity from '../entities/order.entity';
@@ -41,14 +41,30 @@ class OrderController {
   private async getOrdersByUserId(req: Request, res: Response) {
     const userID = req.params.userID || req.query.userID;
 
+    console.log("UserID:", userID);
+
     if(userID){
       const order = await this.orderService.getOrdersByUserId(userID.toString());
-      return new SuccessResult({
-        msg: Result.transformRequestOnMsg(req),
-        data: order,
+
+      console.log("Orders:", order);
+
+      if (order.length > 0) {
+        return new SuccessResult({
+          msg: Result.transformRequestOnMsg(req),
+          data: order,
+        }).handle(res);
+      } else {
+        return new FailureResult({
+          msg:"not found",
+        }).handle(res);
+      }
+    } else {
+      res.statusMessage = "not found"
+      return new FailureResult({
+        msg:"not found",
       }).handle(res);
     }
-  }
+}
 
   private async createOrder(req: Request, res: Response) {
     const orderData =  new OrderEntity({...req.body, status: OrderStatus.inCart});
