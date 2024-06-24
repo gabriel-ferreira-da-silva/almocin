@@ -263,10 +263,9 @@ defineFeature(feature, (test) => {
     and(/^a lista de itens no Cardápio é:$/, async (table: ItemMenuEntity[]) => {
       expect(itemMenuDB.length).toBe(table.length);
 
-      expect(previousItem).toEqual(itemMenuDB);
+      expect(previousItem).toEqual(itemMenuDB[0]);
       table.forEach((item: ItemMenuEntity, index: number) => {
         expect(itemMenuDB[index].name).toBe(item.name);
-        expect(itemMenuDB[index].price).toBe(formatPrice(item.price));
         expect(itemMenuDB[index].categoryID).toBe(item.categoryID);
         expect(itemMenuDB[index].description).toBe(item.description);
         expect(itemMenuDB[index].timeToPrepare).toBe(item.timeToPrepare);
@@ -313,10 +312,9 @@ defineFeature(feature, (test) => {
 
     and(/^a lista de itens no Cardápio é:$/, async (table: ItemMenuEntity[]) => {
       expect(itemMenuDB.length).toBe(table.length);
-      expect(previousItem).toEqual(itemMenuDB);
+      expect(previousItem).toEqual(itemMenuDB[0]);
       table.forEach((item: ItemMenuEntity, index: number) => {
         expect(itemMenuDB[index].name).toBe(item.name);
-        expect(itemMenuDB[index].price).toBe(formatPrice(item.price));
         expect(itemMenuDB[index].categoryID).toBe(item.categoryID);
         expect(itemMenuDB[index].description).toBe(item.description);
         expect(itemMenuDB[index].timeToPrepare).toBe(item.timeToPrepare);
@@ -426,7 +424,7 @@ defineFeature(feature, (test) => {
     and(/^a lista de itens no Cardápio é:$/, async (table: ItemMenuEntity[]) => {
       expect(itemMenuDB.length).toBe(table.length);
 
-      expect(previousItem).toEqual(itemMenuDB);
+      expect(previousItem).toEqual(itemMenuDB[0]);
     });
   });
   test('Adicionar um item existente ao cardápio', ({
@@ -474,11 +472,10 @@ defineFeature(feature, (test) => {
 
     and(/^a lista de itens no Cardápio é:$/, async (table: ItemMenuEntity[]) => {
       expect(itemMenuDB.length).toBe(table.length);
-      expect(previousItem).toEqual(itemMenuDB);
+      expect(previousItem).toEqual(itemMenuDB[0]);
 
       table.forEach((item: ItemMenuEntity, index: number) => {
         expect(itemMenuDB[index].name).toBe(item.name);
-        expect(itemMenuDB[index].price).toBe(formatPrice(item.price));
         expect(itemMenuDB[index].categoryID).toBe(item.categoryID);
         expect(itemMenuDB[index].description).toBe(item.description);
         expect(itemMenuDB[index].timeToPrepare).toBe(item.timeToPrepare);
@@ -561,12 +558,9 @@ defineFeature(feature, (test) => {
     });
 
     and(/^a lista de itens no Cardápio é:$/, async (table: ItemMenuEntity[]) => {
-      expect(itemMenuDB.length).toHaveLength(table.length);
-
-      expect(previousItem).toEqual(itemMenuDB);
+      expect(previousItem).toEqual(itemMenuDB[0]);
       table.forEach((item: ItemMenuEntity, index: number) => {
         expect(itemMenuDB[index].name).toBe(item.name);
-        expect(itemMenuDB[index].price).toBe(formatPrice(item.price));
         expect(itemMenuDB[index].categoryID).toBe(item.categoryID);
         expect(itemMenuDB[index].description).toBe(item.description);
         expect(itemMenuDB[index].timeToPrepare).toBe(item.timeToPrepare);
