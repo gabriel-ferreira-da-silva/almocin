@@ -47,11 +47,11 @@ export default class Database {
     ]
 
     const orders = [
-      { id: '0', userID: "0", itemsID:["item-id-0","item-id-1"] , status:OrderStatus.concluded},
-      { id: '1', userID: "1", itemsID:["item-id-1","item-id-2","item-id-3"], status: OrderStatus.inProgress },
-      { id: '2', userID: "0", itemsID:["item-id-0","item-id-1","item-id-3"], status: OrderStatus.canceled},
-      { id: '3', userID: "1", itemsID:["item-id-2","item-id-3"],status: OrderStatus.concluded },
-      { id: '4', userID: "2", itemsID:["item-id-1","item-id-2"],status: OrderStatus.concluded},
+      { id: "0", userID: "0", itemsID:["item-id-0","item-id-1"] , status:OrderStatus.concluded},
+      { id: "1", userID: "1", itemsID:["item-id-1","item-id-2","item-id-3"], status: OrderStatus.inProgress },
+      { id: "2", userID: "0", itemsID:["item-id-0","item-id-1","item-id-3"], status: OrderStatus.canceled},
+      { id: "3", userID: "1", itemsID:["item-id-2","item-id-3"],status: OrderStatus.concluded },
+      { id: "4", userID: "2", itemsID:["item-id-1","item-id-2"],status: OrderStatus.concluded},
     ]
 
     const linkItemsCategories = items.map(() => (

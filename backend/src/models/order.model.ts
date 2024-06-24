@@ -11,8 +11,17 @@ export default class OrderModel extends BaseModel {
   cep: string;
   address_number: number;
 
-  constructor(data: OrderModel) {
-    super(data.id || '');
+  constructor(data: {
+    id: string,
+    items: ItemMenuEntity[],
+    userID: string,
+    totalPrice: number,
+    status: OrderStatus,
+    totalDeliveryTime: number,
+    cep: string,
+    address_number: number
+  }) {
+    super(data.id);
     this.items = data.items;
     this.userID = data.userID;
     this.totalPrice = data.totalPrice;

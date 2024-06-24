@@ -27,6 +27,22 @@ class OrderService {
     return model;
   }
   public async getOrdersByUserId(userId: string): Promise<OrderModel[]> {
+    const entity = await this.orderRepository.getOrders();
+    const menu = await this.menuRepository.getItems();
+    const model = entity.map((item) => new OrderModel({
+      ...item,
+      items: menu.filter(el => item.itemsId.includes(el.id)),
+    }));
+    
+    const fmodel = model.filter(order=> order.userID==userId)
+    if(fmodel.length <=0){
+      throw new HttpNotFoundError({
+        msg: 'not found',
+        msgCode: 'Item não encontrado no cardápio',
+      });
+    }
+    return fmodel;
+    /*
     const entity = await this.orderRepository.getOrders();    
     const menu = await this.menuRepository.getItems();
     
@@ -44,7 +60,7 @@ class OrderService {
         });
       }
     
-    return model;
+    return model;*/
 }
 
   public async createOrder(data: OrderEntity): Promise<OrderModel> {
