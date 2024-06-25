@@ -12,3 +12,9 @@ export enum ValidationMessages {
   EMAIL_ALREADY_EXISTS = 'User with this email already exists',
   CPF_ALREADY_EXISTS = 'User with this CPF already exists',
 }
+
+export enum CategoryValidationMessages {
+  ALREADY_EXISTS_MSG_CODE = 'Categoria já existente.',
+  NOT_FOUND_MSG_CODE = 'Categoria não encontrada',
+  CANNOT_DELETE_MSG_CODE = 'Categoria não pode ser deletada',
+}
