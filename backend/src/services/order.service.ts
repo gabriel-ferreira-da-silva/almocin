@@ -2,8 +2,8 @@ import OrderModel from '../models/order.model';
 import OrderRepository from '../repositories/order.repository';
 import MenuRepository from '../repositories/menu.repository';
 import OrderEntity from '../entities/order.entity';
-import cep from 'cep-promise'; //duvida da API
-import axios from 'axios';
+import { HttpNotFoundError } from '../utils/errors/http.error';
+import { OrderStatus } from '../types/order';
 
 class OrderService {
   private orderRepository: OrderRepository;
@@ -22,7 +22,7 @@ class OrderService {
     const menu = await this.menuRepository.getItems();
     const model = entity.map((item) => new OrderModel({
       ...item,
-      items: menu.filter(el => item.itemsId.includes(el.id)),
+      itemsId: menu.filter(el => item.itemsId.includes(el.id)).map(el => el.id),
     }));
     return model;
   }
@@ -34,58 +34,56 @@ class OrderService {
       .filter(order => order.userID === userId)  // Filter orders by userId
       .map((item) => new OrderModel({
         ...item,  // Spread the properties of the order entity
-        items: menu.filter(el => item.itemsId.includes(el.id)),  // Filter menu items to include only those with ids in item.itemsId
+        itemsId: menu.filter(el => item.itemsId.includes(el.id)).map(el => el.id),  // Filter menu items to include only those with ids in item.itemsId
       }));
     
     return model;
 }
 
   public async createOrder(data: OrderEntity): Promise<OrderModel> {
+    const intemsId = data.itemsId;
     const orderEntity = new OrderEntity(data);
     const createdOrder = await this.orderRepository.createOrder(orderEntity);
-    const menu = await this.menuRepository.getItems();
     return new OrderModel({
       ...createdOrder,
-      items: menu.filter(el => createdOrder.itemsId.includes(el.id)),
+      itemsId: intemsId,
+      status: OrderStatus.inCart,
     });
   }
 
-  public async updateOrder(orderId: string, data: OrderEntity): Promise<OrderModel | null> {
-    const updatedOrder = await this.orderRepository.updateOrder(orderId, data);
-    if (!updatedOrder) return null;
-    const menu = await this.menuRepository.getItems();
-    return new OrderModel({
-      ...updatedOrder,
-      items: menu.filter(el => updatedOrder.itemsId.includes(el.id)),
+  public async updateOrder(id: string, data: OrderEntity): Promise<OrderModel> {
+    const previousOrder = await this.orderRepository.getOrder(id);
+    if (!previousOrder) {
+      throw new HttpNotFoundError({
+        msgCode: 'Não encontrado',
+        msg: 'Pedido não encontrado no cardápio',
+      });
+    }
+
+    const newData: OrderEntity = new OrderEntity({
+      ...previousOrder,
+      itemsId: data?.itemsId ?? previousOrder.itemsId,
+      userID: data?.userID ?? previousOrder.userID,
+      totalPrice: data?.totalPrice ?? previousOrder.totalPrice,
+      status: data?.status ?? previousOrder.status,
+      totalDeliveryTime: data?.totalDeliveryTime ?? previousOrder.totalDeliveryTime,
+      cep: data?.cep ?? previousOrder.cep,
+      address_number: data?.address_number ?? previousOrder.address_number,
     });
+
+    const entity = await this.orderRepository.updateOrder(id, newData);
+
+
+    if (entity) {
+      return new OrderModel(entity);
+    } else {
+      throw new Error('Order entity is null.');
+    }
   }
 
   public async calculateDeliveryTime(cepValue: string): Promise<number> {
-    const cepResult = await cep(cepValue);
-
-    if (!cepResult || !cepResult.street || !cepResult.neighborhood || !cepResult.city || !cepResult.state) {
-      throw new Error('Endereço não encontrado para o CEP fornecido.');
-    }
-
-    const address = `${cepResult.street} ${cepResult.neighborhood} ${cepResult.city}, ${cepResult.state}`;
-
-    const googleApiKey = process.env.GOOGLE_API_KEY;
-    const response = await axios.get('https://maps.googleapis.com/maps/api/distancematrix/json', {
-      params: {
-        destinations: address,
-        origins: 'place_id:${ChIJqzBUEeIbqwcR0x2hkcrMziA}', // PlaceID do CIn
-        units: 'metrics',
-        key: googleApiKey,
-      },
-    });
-
-    const distanceMatrixResult = response.data;
-
-    if (distanceMatrixResult.status !== 'OK' || distanceMatrixResult.rows[0].elements[0].status !== 'OK') {
-      throw new Error('Não foi possível calcular o tempo de entrega.');
-    }
-
-    const duration = Math.ceil((distanceMatrixResult.rows[0].elements[0].duration.value) / 60);
+    const cepNumber = parseInt(cepValue.split('-')[1]) + 1;
+    const duration = Math.ceil(Math.random() * (cepNumber % 70) + 1);
 
     return duration;
   }
