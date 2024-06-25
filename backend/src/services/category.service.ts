@@ -3,6 +3,7 @@ import CategoryModel from '../models/category.model';
 import CategoryRepository from '../repositories/category.repository';
 import MenuRepository from '../repositories/menu.repository';
 import { HttpBadRequestError, HttpNotFoundError } from '../utils/errors/http.error';
+import { CategoryValidationMessages } from '../utils/validation/validationMessages';
 
 class CategoryService {
   private categoryRepository: CategoryRepository;
@@ -33,8 +34,8 @@ class CategoryService {
 
     if (!entity) {
       throw new HttpNotFoundError({
-        msg: 'Não encontrado',
-        msgCode: 'Categoria não registrada no sistema',
+        msg: 'Categoria não registrada no sistema',
+        msgCode: CategoryValidationMessages.NOT_FOUND_MSG_CODE,
       });
     }
 
@@ -48,7 +49,7 @@ class CategoryService {
     return model;
   }
 
-  public async createCategory(data: CategoryEntity): Promise<CategoryModel> {
+  public async createCategory(data: CategoryEntity): Promise<string> {
     const alreadyExists = await this.categoryRepository.getCategoryByName(data.name);
 
     if (alreadyExists) {
@@ -60,12 +61,7 @@ class CategoryService {
     
     const entity = await this.categoryRepository.createCategory(data);
 
-    const model = new CategoryModel({
-      ...entity,
-      items: [],
-    });
-
-    return model;
+    return `Categoria ${entity.name} criada com sucesso.`;
   }
 
   public async updateCategory(id: string, data: CategoryEntity): Promise<string> {
@@ -73,7 +69,7 @@ class CategoryService {
 
     if (alreadyExists) {
       throw new HttpBadRequestError({
-        msgCode: 'Categoria já existente.',
+        msgCode: CategoryValidationMessages.ALREADY_EXISTS_MSG_CODE,
         msg: `Categoria ${data.name} já existe no sistema`,
       });
     }
@@ -82,8 +78,8 @@ class CategoryService {
 
     if (!entity) {
       throw new HttpNotFoundError({
-        msg: 'Categoria não encontrada',
-        msgCode: 'Categoria não pode ser atualizada pois não foi encontrada.',
+        msg: 'Categoria não pode ser atualizada pois não foi encontrada.',
+        msgCode: CategoryValidationMessages.NOT_FOUND_MSG_CODE,
       });
     }
 
@@ -94,7 +90,7 @@ class CategoryService {
     const category = await this.categoryRepository.getCategory(id);
     if (!category) {
       throw new HttpNotFoundError({
-        msgCode: 'Categoria não encontrada',
+        msgCode: CategoryValidationMessages.NOT_FOUND_MSG_CODE,
         msg: 'Categoria não pode ser deletada pois não foi encontrada.',
       });
     }
@@ -103,7 +99,7 @@ class CategoryService {
 
     if (items.some((i) => i.categoryID === id)) {
       throw new HttpBadRequestError({
-        msgCode: 'Categoria não pode ser deletada',
+        msgCode: CategoryValidationMessages.CANNOT_DELETE_MSG_CODE,
         msg: 'Não é possível deletar pois há itens associados.',
       });
     }

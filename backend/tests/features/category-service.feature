@@ -65,9 +65,7 @@ Scenario: Criar uma categoria
     "name": "Lanches"
   }
   """
-  Then o método retorna o item formatado:
-    | name | itemsId |
-    | Lanches | [] |
+  Then o método retorna: "Categoria Lanches criada com sucesso."
 
 Scenario: Modificar uma categoria
   Given o método updateCategory retorna o item formatado baseado no id e dados especificados e o CategoryRepository retorna os itens:

@@ -161,12 +161,8 @@ defineFeature(feature, (scenario) => {
       functionResponse = await categoryService.createCategory(JSON.parse(docString))
     });
 
-    then('o método retorna o item formatado:', (table) => {
-      const item = table[0]
-      expect(functionResponse.name).toEqual(item.name)
-      expect(functionResponse.items.map(
-        (el: CategoryModel) => el.id)
-      ).toEqual(JSON.parse(item.itemsId))
+    then(/^o método retorna: "(.*)"$/, (message) => {
+      expect(functionResponse).toEqual(message)
     });
   });
   scenario('Modificar uma categoria', ({
