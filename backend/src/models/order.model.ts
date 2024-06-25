@@ -3,7 +3,7 @@ import { OrderStatus } from '../types/order';
 import BaseModel from './base.model';
 
 export default class OrderModel extends BaseModel {
-  items: ItemMenuEntity[];
+  itemsId: string[];
   userID: string;
   totalPrice: number;
   status: OrderStatus;
@@ -13,7 +13,7 @@ export default class OrderModel extends BaseModel {
 
   constructor(data: OrderModel) {
     super(data.id || '');
-    this.items = data.items;
+    this.itemsId = data.itemsId;
     this.userID = data.userID;
     this.totalPrice = data.totalPrice;
     this.status = data.status;
