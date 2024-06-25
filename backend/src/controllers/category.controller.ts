@@ -1,7 +1,9 @@
 import { Router, Request, Response } from 'express';
-import { Result, SuccessResult } from '../utils/result';
+import { FailureResult, Result, SuccessResult } from '../utils/result';
 import CategoryService from '../services/category.service';
 import CategoryEntity from '../entities/category.entity';
+import { HttpNotFoundError } from '../utils/errors/http.error';
+import { CategoryValidationMessages } from '../utils/validation/validationMessages';
 
 class CategoryController {
   private prefix: string = '/category';
@@ -44,43 +46,82 @@ class CategoryController {
   }
 
   private async getCategory(req: Request, res: Response) {
-    const data = await this.categoryService.getCategory(req.params.id);
-
-    return new SuccessResult({
-      msg: Result.transformRequestOnMsg(req),
-      data: data,
-    }).handle(res);
+    try {
+      const data = await this.categoryService.getCategory(req.params.id);
+  
+      return new SuccessResult({
+        msg: Result.transformRequestOnMsg(req),
+        data: data,
+      }).handle(res);
+    } catch (e) {
+      const { msg, msgCode } = e as HttpNotFoundError;
+      return new FailureResult({
+        msg,
+        msgCode,
+        code: 404,
+      }).handle(res);
+    }
   }
 
   private async createCategory(req: Request, res: Response) {
-    const data = await this.categoryService.createCategory(
-      new CategoryEntity(req.body)
-    );
-
-    return new SuccessResult({
-      msg: Result.transformRequestOnMsg(req),
-      data: data,
-    }).handle(res);
+    try {
+      const data = await this.categoryService.createCategory(
+        new CategoryEntity(req.body)
+      );
+  
+      return new SuccessResult({
+        msg: Result.transformRequestOnMsg(req),
+        data: data,
+        code: 201,
+      }).handle(res);
+    } catch (e) {
+      const { msg, msgCode } = e as HttpNotFoundError;
+      return new FailureResult({
+        msg,
+        msgCode,
+        code: 400,
+      }).handle(res);
+    }
   }
 
   private async updateCategory(req: Request, res: Response) {
-    const data = await this.categoryService.updateCategory(
-      req.params.id,
-      new CategoryEntity(req.body)
-    );
-
-    return new SuccessResult({
-      msg: Result.transformRequestOnMsg(req),
-      data: data,
-    }).handle(res);
+    try {
+      const data = await this.categoryService.updateCategory(
+        req.params.id,
+        new CategoryEntity(req.body)
+      );
+  
+      return new SuccessResult({
+        msg: Result.transformRequestOnMsg(req),
+        data: data,
+      }).handle(res);
+    } catch (e) {
+      const { msg, msgCode } = e as HttpNotFoundError;
+      
+      return new FailureResult({
+        msg,
+        msgCode,
+        code: msgCode === CategoryValidationMessages.NOT_FOUND_MSG_CODE ? 404 : 400,
+      }).handle(res);
+    }
   }
 
   private async deleteCategory(req: Request, res: Response) {
-    await this.categoryService.deleteCategory(req.params.id);
-
-    return new SuccessResult({
-      msg: Result.transformRequestOnMsg(req),
-    }).handle(res);
+    try {
+      const itemName = await this.categoryService.deleteCategory(req.params.id);
+  
+      return new SuccessResult({
+        msg: `Categoria ${itemName} removido do cardápio`,
+      }).handle(res);
+    } catch (e) {
+      const { msg, msgCode } = e as HttpNotFoundError;
+      
+      return new FailureResult({
+        msg,
+        msgCode,
+        code: msgCode === CategoryValidationMessages.NOT_FOUND_MSG_CODE ? 404 : 400,
+      }).handle(res);
+    }
   }
 }
 

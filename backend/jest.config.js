@@ -8,5 +8,9 @@ module.exports = {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
   setupFilesAfterEnv: ['./setupTests.ts'],
+  coveragePathIgnorePatterns: [
+    "<rootDir>/src/utils/auth",
+    "<rootDir>/src/core",
+  ]
 };
 
