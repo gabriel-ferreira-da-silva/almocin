@@ -4,7 +4,7 @@ export const validateCep = (cep: string): boolean => {
 };
 
 export const validateEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
   return emailRegex.test(email);
 };
 

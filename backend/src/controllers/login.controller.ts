@@ -32,6 +32,8 @@ class LoginController {
       res.cookie('session_token', token, {
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000, // 24 horas
+        sameSite: 'strict',
+        secure: process.env.NODE_ENV === 'production',
       });
 
       return res.status(200).json({ msg: 'Login successful', data: { token } });

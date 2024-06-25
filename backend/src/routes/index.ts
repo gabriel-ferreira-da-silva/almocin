@@ -14,42 +14,42 @@ import OrderService from '../services/order.service';
 import OrderController from '../controllers/order.controller';
 import StatsController from '../controllers/stats.controller';
 import StatsService from '../services/stats.service';
+import limiterMiddleware from '../core/limiter';
 
 const router = Router();
 const prefix = '/api';
 
 export default (app: Express) => {
-  // Rota de Login
   app.use(
     `${prefix}`,
+    limiterMiddleware,
     new LoginController(router, di.getService(LoginService)).router
   );
 
-  // Rota de Registro
   app.use(
     `${prefix}`,
-    new RegisterController(router, di.getService(RegisterService)).router // Adicione isto
+    new RegisterController(router, di.getService(RegisterService)).router
   );
 
-  // Middleware de autenticação aplicado às rotas que necessitam
-  app.use(authMiddleware);
-
-  // Rotas que necessitam de autenticação
   app.use(
     `${prefix}`,
+    authMiddleware,
     new MenuController(router, di.getService(MenuService)).router
   );
   app.use(
     `${prefix}`,
+    authMiddleware,
     new CategoryController(router, di.getService(CategoryService)).router
   );
 
   app.use(
     `${prefix}`,
+    authMiddleware,
     new OrderController(router, di.getService(OrderService)).router
   )
   app.use(
     `${prefix}`,
+    authMiddleware,
     new StatsController(router, di.getService(StatsService)).router
   )
   
