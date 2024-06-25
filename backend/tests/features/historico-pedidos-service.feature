@@ -19,18 +19,6 @@ Scenario: Listar todos os pedidos
     | "4"  |  "2"     | ["item-id-1","item-id-2"]   | "In Progress"|
 
 
-Scenario: Listar todos os pedidos de usuario
-  Given o método "getOrdersByUserId" recebe o parametro "userId"="1"
-  And o método getOrdersByUserId retorna todos os itens de ordersRepository onde o campo userId="1"
-  | id | userId | itemsId                                 | status | 
-    | 1  |  1     | ["item-id-1","item-id-2","item-id-3"]   | "In Progress"|
-    | 3  |  1     | ["item-id-2","item-id-3"]               | "Concluded"|
-  When o método getOrdersByUserId com parametro userId="1" é chamado
-  Then o método retorna todos os itens :
-    | id | userId | itemsId                                 | status | 
-    | 1  |  1     | ["item-id-1","item-id-2","item-id-3"]   | "In Progress"|
-    | 3  |  1     | ["item-id-2","item-id-3"]               | "Concluded"|
-
 Scenario: erro ao listar todos os pedidos de usuario
   Given o método "getOrdersByUserId" recebe o parametro "userId"="1000"
   And o método getOrdersByUserId retorna todos os itens de ordersRepository onde o campo userId="1"

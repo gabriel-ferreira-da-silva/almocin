@@ -180,28 +180,6 @@ defineFeature(feature, (test) => {
     });
   });
 
-  test('Listar todos os pedidos de usuario', ({ given, and, when, then }) => {
-    given('o método "getOrdersByUserId" recebe o parametro "userId"="1"', () => {
-      // No action needed for this step
-    });
-
-    and(/^o método getOrdersByUserId retorna todos os itens de ordersRepository onde o campo userId="(.*)"$/, async (table) => {
-      jest.spyOn(orderRepository, 'getOrdersByUserId').mockImplementation(async (userId) => table);
-    });
-
-    let result: OrderModel[];
-
-    when(/^o método getOrdersByUserId com parametro userId="(.*)" é chamado$/, async (userId) => {
-      //result = await orderService.getOrdersByUserId("1");
-    });
-
-    
-    then('o método retorna todos os itens :', (table) => {
-      for (let i = 0; i < table.length; i++) {
-        //expect(result[i].id).toBe(table[i].id)
-      }
-    });
-  });
 
   test('erro ao listar todos os pedidos de usuario', ({ given, and, when, then }) => {
     given('o método "getOrdersByUserId" recebe o parametro "userId"="1000"', () => {

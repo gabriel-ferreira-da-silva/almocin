@@ -40,8 +40,7 @@ defineFeature(feature, (test) => {
 
     when(/^o usuário faz uma requisição "(.*)" para "(.*)" com os seguintes dados:$/, async (method, route, docString) => {
       response = await request.put(route).send({ status: OrderStatus.canceled });
-      console.log("PUT Request Response:///////////////////////////////////////////////////////////////////////////////////////////////", response.body); // Lo
-      expect(response.status).toBe(200); // Verify that the request was successful
+      expect(response.status).toBe(200); 
     });
 
     then(/^a resposta deve ser "(.*)"$/, (statusCode) => {
@@ -52,8 +51,7 @@ defineFeature(feature, (test) => {
       const updatedOrders = await mockOrderRepository.getOrders();
 
       expect(updatedOrders.length).toBe(table.length);
-      console.log("Updated Orders:", updatedOrders); // Log the updated orders
-
+      console.log("Updated Orders:", updatedOrders); 
       for (let i = 0; i < updatedOrders.length; i++) {
         expect(updatedOrders[i].id).toEqual(table[i].id);
         expect(updatedOrders[i].userID).toEqual(table[i].userID);
