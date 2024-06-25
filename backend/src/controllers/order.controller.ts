@@ -27,6 +27,10 @@ class OrderController {
     this.router.post(this.prefix, (req: Request, res: Response) =>
       this.createOrder(req, res)
     );
+
+    this.router.put(`${this.prefix}/:id`, (req: Request, res: Response) =>
+      this.updateOrder(req, res)
+    );
   }
 
   public async getOrders(req: Request, res: Response) {
@@ -65,6 +69,18 @@ class OrderController {
       }).handle(res);
     }
 }
+
+
+  private async updateOrder(req: Request, res: Response) {
+    const orderId = req.params.id;
+    const orderData = new OrderEntity({ ...req.body });
+    const updatedOrder = await this.orderService.updateOrder(orderId, orderData);
+
+    return new SuccessResult({
+      msg: Result.transformRequestOnMsg(req),
+      data: updatedOrder,
+    }).handle(res);
+  }
 
   private async createOrder(req: Request, res: Response) {
     const orderData =  new OrderEntity({...req.body, status: OrderStatus.inCart});

@@ -62,6 +62,16 @@ class OrderService {
     
     return model;*/
 }
+  public async updateOrder(orderId: string, data: OrderEntity): Promise<OrderModel | null> {
+    const updatedOrder = await this.orderRepository.updateOrder(orderId, data);
+    if (!updatedOrder) return null;
+    const menu = await this.menuRepository.getItems();
+    return new OrderModel({
+      ...updatedOrder,
+      items: menu.filter(el => updatedOrder.itemsId.includes(el.id)),
+    });
+  }
+
 
   public async createOrder(data: OrderEntity): Promise<OrderModel> {
     const orderEntity = new OrderEntity(data);
