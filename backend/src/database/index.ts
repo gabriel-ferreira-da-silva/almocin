@@ -46,6 +46,12 @@ export default class Database {
       { id: 'category-id-7', name: 'Gourmet' }
     ]
 
+    const users = [
+      { id: 'user-id-0', name: 'João' },
+      { id: 'user-id-1', name: 'Maria' },
+      { id: 'user-id-2', name: 'José' }
+    ]
+
     const linkItemsCategories = items.map(() => (
       categories[Math.floor(Math.random() * categories.length)].id
     ))
@@ -63,6 +69,7 @@ export default class Database {
         price: Math.floor(Math.random() * 10) + 1, // 1 - 10
         timeToPrepare: Math.floor(Math.random() * 60) + 15, // 15 - 75 minutes
       })),
+
       category: categories.map((category) => ({
         ...category,
         createdAt: new Date(),
@@ -71,7 +78,7 @@ export default class Database {
 
       order: items.map((item, index) => new OrderEntity({
         itemsId:items,
-        userID: Math.floor(Math.random() * 3).toString(),
+        userID: users[Math.floor(Math.random() * users.length)].id,
         id: `pedido-id-${index}`,
         totalPrice: Math.floor(Math.random() * 10), // 0 - 9
         status: OrderStatus.inProgress,
@@ -82,6 +89,11 @@ export default class Database {
         active: Math.random() > 0.5, // 50%
       })),
       
+      user: users.map((user) => ({
+        ...user,
+        createdAt: new Date(),
+        active: Math.random() > 0.5, // 50%
+      })),
     };
   }
 }
