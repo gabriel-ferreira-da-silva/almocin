@@ -1,37 +1,37 @@
-set -euo pipefail
+# set -euo pipefail
 
-git diff HEAD --quiet -- almocin
+# git diff HEAD --quiet -- almocin
 
-if [ $? -ne 0 ]; then
-  echo "Please commit the changes before a push."
-  exit 1
-fi
+# if [ $? -ne 0 ]; then
+#   echo "Please commit the changes before a push."
+#   exit 1
+# fi
 
-branch=$(git for-each-ref --format='%(upstream:short)' "$(git symbolic-ref -q HEAD)")
-last_push=$(git rev-parse $branch)
-files_changed=$(git diff $last_push --dirstat=files)
+# branch=$(git for-each-ref --format='%(upstream:short)' "$(git symbolic-ref -q HEAD)")
+# last_push=$(git rev-parse $branch)
+# files_changed=$(git diff $last_push --dirstat=files)
 
-if [[ $files_changed =~ "backend/" ]]; then
-  cd backend
-  npm run test
+# if [[ $files_changed =~ "backend/" ]]; then
+#   cd backend
+#   npm run test
 
-  if [ $? -ne 0 ]; then
-    echo "Tests failed."
-    exit 1
-  fi
+#   if [ $? -ne 0 ]; then
+#     echo "Tests failed."
+#     exit 1
+#   fi
 
-  cd ..
-fi
+#   cd ..
+# fi
 
 
-if [[ $files_changed =~ "frontend/" ]]; then
-  cd frontend
-  npm run test
+# if [[ $files_changed =~ "frontend/" ]]; then
+#   cd frontend
+#   npm run test
 
-  if [ $? -ne 0 ]; then
-    echo "Tests failed."
-    exit 1
-  fi
+#   if [ $? -ne 0 ]; then
+#     echo "Tests failed."
+#     exit 1
+#   fi
 
-  cd ..
-fi
+#   cd ..
+# fi

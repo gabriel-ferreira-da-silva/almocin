@@ -30,7 +30,7 @@ class OrderRepository extends BaseRepository<OrderEntity> {
   }
 
   public async deleteOrder(id: string): Promise<void> {
-    await this.delete((Order) => Order.id === id);
+    await this.delete((Order) => Order.id !== id);
   }
 }
 

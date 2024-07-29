@@ -22,6 +22,20 @@ export default class Database {
   }
 
   static seed() {
+    let imageUrl: string[] = []
+
+    function populateImageUrl() {
+      const baseUrl = 'https://api.unsplash.com/search/collections?page=1&query=food&client_id='
+      fetch(baseUrl+process.env.UNSPLASH_ACCESS_KEY).then((res) => res.json()).then((data) => {
+        imageUrl = data.results.map((result: any) => result.cover_photo.urls.regular)
+        setInstanceData()
+      }).catch((err) => {
+        console.error(err)
+      })
+    }
+
+    populateImageUrl()
+
     const items = [
       'Batata',
       'Arroz',
@@ -46,52 +60,75 @@ export default class Database {
       { id: 'category-id-7', name: 'Gourmet' }
     ]
 
-    const orders = [
-      { id: "0", userID: "0", itemsID:["item-id-0","item-id-1"] , status:OrderStatus.concluded},
-      { id: "1", userID: "1", itemsID:["item-id-1","item-id-2","item-id-3"], status: OrderStatus.inProgress },
-      { id: "2", userID: "0", itemsID:["item-id-0","item-id-1","item-id-3"], status: OrderStatus.canceled},
-      { id: "3", userID: "1", itemsID:["item-id-2","item-id-3"],status: OrderStatus.concluded },
-      { id: "4", userID: "2", itemsID:["item-id-1","item-id-2"],status: OrderStatus.concluded},
+    const users = [
+      { id: 'user-id-0', name: 'João' },
+      { id: 'user-id-1', name: 'Maria' },
+      { id: 'user-id-2', name: 'José' }
     ]
 
     const linkItemsCategories = items.map(() => (
       categories[Math.floor(Math.random() * categories.length)].id
     ))
 
-    
+    function getRandomItemsIds() {
+      const itemsIds = [];
+      const itemsLength = Math.floor(Math.random() * items.length) + 1; // 1 - 10
+      for (let i = 0; i < itemsLength; i++) {
+        itemsIds.push(`item-id-${Math.floor(Math.random() * items.length)}`);
+      }
+      return itemsIds;
+    }
 
-    Database.getInstance().data = {
-      menu: items.map((item, index) => new ItemMenuEntity({
-        id: `item-id-${index}`,
-        name: item,
-        createdAt: new Date(),
-        active: Math.random() > 0.5, // 50%
-        description: `Descrição do ${item}`,
-        image: `${item.toLowerCase()}.png`,
-        categoryID: linkItemsCategories[index],
-        oldPrice: Math.floor(Math.random() * 10), // 0 - 9
-        price: Math.floor(Math.random() * 10) + 1, // 1 - 10
-        timeToPrepare: Math.floor(Math.random() * 60) + 15, // 15 - 75 minutes
-      })),
-      category: categories.map((category) => ({
-        ...category,
-        createdAt: new Date(),
-        active: linkItemsCategories.includes(category.id) ?? Math.random() > 0.5
-      })),
+    function getRandomOrdersStatus(): OrderStatus {
+      const status = [
+        OrderStatus.inProgress,
+        OrderStatus.inCart,
+        OrderStatus.canceled,
+        OrderStatus.concluded
+      ];
+      return status[Math.floor(Math.random() * status.length)];
+    }
 
-      order: orders.map((order) => new OrderEntity({
-        itemsId:order.itemsID,
-        userID: order.userID,
-        id: order.id,
-        totalPrice: Math.floor(Math.random() * 10), // 0 - 9
-        status: order.status,
-        totalDeliveryTime: Math.floor(Math.random() * 60) + 15, // 15 - 75 minutes,
-        cep: "12345-678",
-        address_number: Math.floor(Math.random() * 999) + 1, // 1 - 1000 address number
-        createdAt: new Date(),
-        active: Math.random() > 0.5, // 50%
-      })),
-      
-    };
+    function setInstanceData() {
+      Database.getInstance().data = {
+        menu: items.map((item, index) => new ItemMenuEntity({
+          id: `item-id-${index}`,
+          name: item,
+          createdAt: new Date(),
+          active: Math.random() > 0.5, // 50%
+          description: `Descrição do ${item}`,
+          image: imageUrl[index],
+          categoryID: linkItemsCategories[index],
+          oldPrice: Math.floor(Math.random() * 10), // 0 - 9
+          price: Math.floor(Math.random() * 10) + 1, // 1 - 10
+          timeToPrepare: Math.floor(Math.random() * 60) + 15, // 15 - 75 minutes
+        })),
+  
+        category: categories.map((category) => ({
+          ...category,
+          createdAt: new Date(),
+          active: linkItemsCategories.includes(category.id) ?? Math.random() > 0.5
+        })),
+  
+        order: items.map((item, index) => new OrderEntity({
+          itemsId: getRandomItemsIds(),
+          userID: users[Math.floor(Math.random() * users.length)].id,
+          id: `pedido-id-${index}`,
+          totalPrice: Math.floor(Math.random() * 10), // 0 - 9
+          status: getRandomOrdersStatus(),
+          totalDeliveryTime: Math.floor(Math.random() * 60) + 15, // 15 - 75 minutes,
+          cep: "12345-678",
+          address_number: Math.floor(Math.random() * 999) + 1, // 1 - 1000 address number
+          createdAt: new Date(),
+          active: Math.random() > 0.5, // 50%
+        })),
+        
+        user: users.map((user) => ({
+          ...user,
+          createdAt: new Date(),
+          active: Math.random() > 0.5, // 50%
+        })),
+      };
+    }
   }
 }

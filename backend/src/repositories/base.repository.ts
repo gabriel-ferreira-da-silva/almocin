@@ -81,10 +81,7 @@ export default class BaseRepository<T extends BaseEntity> {
         return;
       }
 
-      this.db.data[this.prefix] = this.db.data[this.prefix].map((item) => {
-        if (filter(item)) item.active = false;
-        return item;
-      })
+      this.db.data[this.prefix] = this.db.data[this.prefix].filter(filter)
     } catch (e) {
       throw new HttpInternalServerError();
     }

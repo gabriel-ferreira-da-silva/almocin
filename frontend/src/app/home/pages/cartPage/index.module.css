@@ -1,0 +1,108 @@
+.cartItem {
+  display: flex;
+  border: solid 1px #e0e0e0;
+  padding: 1rem;
+  gap: 1rem;
+  border-radius: .5rem;
+  min-width: 35rem;
+  margin-bottom: 1rem;
+}
+
+.cartItem img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border: solid 1px #e0e0e0;
+}
+
+.cartItem p {
+  font-size: 1.5rem;
+  flex: 1;
+}
+
+.cartItemActions {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.cartItemDeleteButton {
+  background-color: #f8f8f8;
+  border: solid 1px #e0e0e0;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.cartItemDeleteButton:hover {
+  color: white;
+  background-color: red;
+}
+
+.cartItemDeleteButton:disabled {
+  background-color: #e0e0e0;
+  cursor: default;
+}
+
+.cartItemPrice {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: end;
+}
+
+.orderActions {
+  position: fixed;
+  bottom: 1rem;
+  right: 3rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.orderActions .totalPrice {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-left: auto;
+}
+
+.deliveryTimeContainer {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.deliveryTime {
+  display: flex;
+  gap: .5rem;
+  font-size: 1.5rem;
+}
+
+.deliveryTime input {
+  width: 8rem;
+  padding: .5rem;
+  border: solid 1px #e0e0e0;
+  border-radius: .5rem;
+}
+
+.deliveryTime button {
+  background-color: #f8f8f8;
+  border: solid 1px #e0e0e0;
+  padding: .5rem;
+  cursor: pointer;
+}
+
+.confirmButton {
+  color: white;
+  background-color: #1daa61;
+  border: none;
+  border-radius: .5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  margin-left: auto;
+  font-size: 1.5rem;
+}
+
+.confirmButton:disabled {
+  background-color: #e0e0e0;
+  cursor: default;
+}

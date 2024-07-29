@@ -17,11 +17,9 @@ Feature: Cancelar Pedidos
         And O pedido "cuscuz com leite" esta cadastrado
         And Status do pedido "cuscuz com leite" e "Em andamento"
         When usuario seleciona opcao "Cancelar pedido"
-        And usuario digita seu "Longin" no campo "digite seu login 
-            para confirmar cancelamento"
+        And usuario digita seu "Longin" no campo "digite seu login para confirmar cancelamento"
         And usuario seleciona opcao "confirmar"
-        Then Usuario recebe uma notificacao com mensagem "Pedido cancelado 
-            por usuario"
+        Then Usuario recebe uma notificacao com mensagem "Pedido cancelado por usuario"
         And Status do pedido "cuscuz com leite" e "cancelado por usuario"
         
     Scenario: Falha em cancelar pedido por usuario - (GUI)

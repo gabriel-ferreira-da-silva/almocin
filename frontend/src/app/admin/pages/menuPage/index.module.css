@@ -1,0 +1,40 @@
+.createItem {
+  text-decoration: none;
+  appearance: none;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 5px;
+  transition: all 0.3s;
+  border: solid 1px #007bff;
+}
+
+.createItem:hover {
+  background-color: #0056b3;
+}
+
+.editLink {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.editLink:hover {
+  color: #0056b3;
+}
+
+.deleteItem {
+  color: #bd2130;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.deleteItem:hover {
+  border-color: #bd2244;
+}
+
+.actionsCell {
+  display: flex;
+  justify-content: space-between;
+}
