@@ -27,7 +27,9 @@ export default class Database {
     function populateImageUrl() {
       const baseUrl = 'https://api.unsplash.com/search/collections?page=1&query=food&client_id='
       fetch(baseUrl+process.env.UNSPLASH_ACCESS_KEY).then((res) => res.json()).then((data) => {
-        imageUrl = data.results.map((result: any) => result.cover_photo.urls.regular)
+        if (data.results) {
+          imageUrl = data.results.map((result: any) => result.cover_photo.urls.regular)
+        }
         setInstanceData()
       }).catch((err) => {
         console.error(err)
@@ -97,7 +99,7 @@ export default class Database {
           createdAt: new Date(),
           active: Math.random() > 0.5, // 50%
           description: `Descrição do ${item}`,
-          image: imageUrl[index],
+          image: imageUrl.length ? imageUrl[index] : 'image.svg',
           categoryID: linkItemsCategories[index],
           oldPrice: Math.floor(Math.random() * 10), // 0 - 9
           price: Math.floor(Math.random() * 10) + 1, // 1 - 10
