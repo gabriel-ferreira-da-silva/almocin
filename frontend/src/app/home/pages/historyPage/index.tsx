@@ -46,7 +46,7 @@ const HistoryPage = () => {
           <span>Erro ao carregar seus pedidos!</span>
         ),
         succeeded: (orders) => (
-          <div className={styles.orderContainer}>
+          <div data-cy='orderPanel' className={styles.orderContainer}>
             {orders.filter(el => el.status != OrderStatus.inCart).map(
               (order, index) => {
                 return (

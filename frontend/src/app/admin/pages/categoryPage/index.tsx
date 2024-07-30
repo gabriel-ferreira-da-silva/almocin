@@ -7,7 +7,6 @@ import LoadingComponent from "../../../../shared/components/Loading";
 import Modal from "../../../../shared/components/Modal";
 import ListItem from "../../components/listItem";
 import BaseLayout from "../../../../shared/components/BaseLayout";
-import { listItemAdmin } from "../../../../shared/types/base-layout";
 
 const CategoryPage = () => {
   const { service, state } = useContext(CategoryContext);
@@ -88,7 +87,7 @@ const CategoryPage = () => {
   ]);
 
   return (
-    <BaseLayout titlePage="Categorias" listItem={listItemAdmin}>
+    <BaseLayout titlePage="Categorias">
       <div className={styles.listContainer}>
         {state.getCategoriesRequestStatus.maybeMap({
           loading: () => <LoadingComponent></LoadingComponent>,
@@ -109,6 +108,7 @@ const CategoryPage = () => {
                     key={category.id}
                     name={category.name}
                     deleteDisabled={createOrEdit == 'edit'}
+                    data-cy="list-category"
                     deleteBtnCallback={deleteCategory(category.id)}
                     editButtonCallback={onEditCategory(category.id, category.name)}
                     editDisabled={createOrEdit == 'edit' && category.id !== categoryToEdit}
@@ -126,6 +126,7 @@ const CategoryPage = () => {
           value={newCategoryName}
           className={styles.createInput}
           placeholder="Nome da nova categoria"
+          data-cy="name-new-category"
         ></input>
         {createOrEdit === 'edit' ?
           <button 
@@ -137,6 +138,7 @@ const CategoryPage = () => {
           <button 
             className={styles.createButton}
             name={'Adicionar categoria'}
+            data-cy="add-category"
             onClick={createCategory()}
             disabled={createOrEdit === 'create' && newCategoryName === ''}
           >Adicionar Categoria</button>

@@ -9,7 +9,7 @@ When('o usuario vai para pagina {string}', (page: string) => {
 });
 
 Then('o usuario recebe o carrinho', () => {
-    cy.get(`orderContainer`)
+    cy.get(`[data-cy='orderPanel']`)
       .should('have.length.at.least', 0);
 });
 

@@ -9,16 +9,20 @@ export default defineConfig({
   viewportHeight: 720,
   defaultCommandTimeout: 5000,
   execTimeout: 60000,
+
   retries: {
     runMode: 1,
     openMode: 0,
   },
+
   chromeWebSecurity: false,
+
   env: {
     codeCoverage: {
       exclude: ["cypress/**/*.*", "coverage/**/*.*"],
     },
   },
+
   e2e: {
     async setupNodeEvents(
       on: Cypress.PluginEvents,
@@ -40,5 +44,12 @@ export default defineConfig({
     },
     baseUrl: "http://localhost:3000",
     specPattern: "cypress/e2e/**/*.feature",
+  },
+  
+  component: {
+    devServer: {
+      framework: "react",
+      bundler: "vite",
+    },
   },
 });

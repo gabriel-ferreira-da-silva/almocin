@@ -10,8 +10,8 @@ When('o usuario vai para a pagina {string}', (page: string) => {
 
 Then('o usuario recebe o historico de pedidos', () => {
     
-    cy.get(`orderContainer`)
-      .should('have.length.at.least', 0);
+    cy.get(`[data-cy='orderPanel']`)
+      .should('have.length.at.least', 1);
 });
 
 
